@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Scr_Camera_player : MonoBehaviour
 {
-    float Sensitivity = 100f;
+    float Sensitivity = 10f;
 
     public Transform RB;
 
@@ -19,8 +19,8 @@ public class Scr_Camera_player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float MouseX = Input.GetAxis("Mouse X") * Sensitivity * Time.deltaTime;
-        float MouseY = Input.GetAxis("Mouse Y") * Sensitivity * Time.deltaTime;
+        float MouseX = Input.GetAxis("Mouse X") * Sensitivity;
+        float MouseY = Input.GetAxis("Mouse Y") * Sensitivity;
 
         xRotation -= MouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
