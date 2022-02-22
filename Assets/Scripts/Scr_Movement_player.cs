@@ -9,8 +9,9 @@ public class Scr_Movement_player : MonoBehaviour
     [SerializeField] Transform orientation;
 
     [Header("Movement")]
-    public float moveSpeed = 10f;
-    [SerializeField] float airMultiplier = 0.4f;
+    public float sprintSpeed = 10f;
+    public float moveSpeed = 4f;
+    float airMultiplier = 0f;
     public float movementMultiplier = 10f;
 
     [Header("Jumping")]
@@ -20,8 +21,10 @@ public class Scr_Movement_player : MonoBehaviour
     [SerializeField] KeyCode jumpKey = KeyCode.Space;
 
     [Header("Drag")]
-    [SerializeField] float groundDrag = 6f;
-    [SerializeField] float airDrag = 2f;
+    float groundDrag = 6f;
+    float airDrag = 0f;
+
+    float gravity;
 
     float horizontalMovement;
     float verticalMovement;
@@ -59,6 +62,7 @@ public class Scr_Movement_player : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+        rb.drag = 0f;
     }
 
 
@@ -75,6 +79,16 @@ public class Scr_Movement_player : MonoBehaviour
         }
 
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
+
+        //gravity
+        if (isGrounded)
+        {
+            gravity = 0f;
+        }
+        else
+        {
+            gravity = Time.deltaTime * -9.81f;
+        }
     }
 
     void MyInput()
@@ -87,7 +101,7 @@ public class Scr_Movement_player : MonoBehaviour
 
     void Jump()
     {
-        jumpMoveDirection = moveDirection;
+        jumpMoveDirection = moveDirection * 0.1f;
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
     }
 
@@ -112,18 +126,35 @@ public class Scr_Movement_player : MonoBehaviour
     {
         if (isGrounded && !OnSlope())
         {
-            //movement force on flat ground
-            rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                //sprint speed on flat ground
+                rb.AddForce(moveDirection.normalized * sprintSpeed * movementMultiplier, ForceMode.Acceleration);
+            }
+            else
+            {
+                //walk speed on flat ground
+                rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+            }
         }
         else if (isGrounded && OnSlope())
         {
-            //movement force on slope
-            rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                //sprint speed on slope
+                rb.AddForce(slopeMoveDirection.normalized * sprintSpeed * movementMultiplier, ForceMode.Acceleration);
+            }
+            else
+            {
+                //walk speed on slope
+                rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+            }
         }
         else if (!isGrounded)
         {
             //jumping in mid air force
-            rb.AddForce(jumpMoveDirection.normalized * moveSpeed * movementMultiplier * airMultiplier, ForceMode.Acceleration);
+            rb.AddForce(jumpMoveDirection.normalized * ((moveSpeed * movementMultiplier * airMultiplier) * 0f) * gravity, ForceMode.Acceleration);
+            rb.AddForce(0, -gravity * 3f, 0, ForceMode.Acceleration);
         }
     }
 }
