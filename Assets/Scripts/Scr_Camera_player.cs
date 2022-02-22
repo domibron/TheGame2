@@ -4,28 +4,45 @@ using UnityEngine;
 
 public class Scr_Camera_player : MonoBehaviour
 {
-    float Sensitivity = 10f;
+    [SerializeField] private float sensX;
+    [SerializeField] private float sensY;
 
-    public Transform RB;
+    Camera cam;
 
-    float xRotation = 0f;
+    float mouseX;
+    float mouseY;
 
-    // Start is called before the first frame update
-    void Start()
+    float multiplier = 1f;
+
+    float xRotation;
+    float yRotation;
+
+    private void Start()
     {
+        cam = GetComponentInChildren<Camera>();
+
         Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        float MouseX = Input.GetAxis("Mouse X") * Sensitivity;
-        float MouseY = Input.GetAxis("Mouse Y") * Sensitivity;
+        MyInput();
 
-        xRotation -= MouseY;
+        cam.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
+        transform.rotation = Quaternion.Euler(0, yRotation, 0);
+    }
+
+    void MyInput()
+    {
+        mouseX = Input.GetAxisRaw("Mouse X");
+        mouseY = Input.GetAxisRaw("Mouse Y");
+
+        yRotation += mouseX * sensX * multiplier;
+        //Debug.Log(sensX);
+        xRotation -= mouseY * sensY * multiplier;
+        //Debug.Log(sensY);
+
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-
-        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        RB.Rotate(Vector3.up * MouseX);
     }
 }
