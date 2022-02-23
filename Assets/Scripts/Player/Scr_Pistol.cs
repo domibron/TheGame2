@@ -7,7 +7,9 @@ public class Scr_Pistol : MonoBehaviour
     public float damage = 10f;
     public float range = 100f;
     public float impactForce = 30f;
-    public float fireRate = 15f;
+    public float fireRate = 1000000f;
+
+    public AudioSource shot;
 
     public Camera fpsCam;
     public ParticleSystem muzzleFlash;
@@ -18,9 +20,9 @@ public class Scr_Pistol : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButton("Fire1") && Time.time >= nextTimeToFire)
+        if (Input.GetButtonDown("Fire1") && Time.time >= nextTimeToFire)
         {
-            nextTimeToFire = Time.time +1f/fireRate;
+            nextTimeToFire = Time.time + (20f/fireRate);
             Shoot();
         }
 
@@ -31,13 +33,14 @@ public class Scr_Pistol : MonoBehaviour
     {
 
         muzzleFlash.Play();
+        shot.Play();
 
         RaycastHit hit;
         if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
         {
             Debug.Log(hit.transform.name);
 
-            ZombieEx target = hit.transform.GetComponent<ZombieEx>();
+            Zombie target = hit.transform.GetComponent<Zombie>();
             if (target != null)
             {
                 target.TakeDamage(damage);
