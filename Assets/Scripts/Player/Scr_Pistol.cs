@@ -37,7 +37,7 @@ public class Scr_Pistol : MonoBehaviour
         {
             Debug.Log(hit.transform.name);
 
-            Zombie target = hit.transform.GetComponent<Zombie>();
+            ZombieEx target = hit.transform.GetComponent<ZombieEx>();
             if (target != null)
             {
                 target.TakeDamage(damage);

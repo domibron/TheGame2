@@ -1,23 +1,23 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
+
 
 public class Zombie : MonoBehaviour
 {
-    public float health = 50f;
+    NavMeshAgent nm;
+    public Transform target;
 
-    public void TakeDamage (float ammount)
+
+    void Start()
     {
-        health -= ammount;
-        if (health <= 0)
-        {
-            Die();
-        }
+        nm = GetComponent<NavMeshAgent>();
+        nm.SetDestination(target.position);
     }
 
-    void Die()
+    void Update()
     {
-        Destroy(gameObject);
+        
     }
-
-
-
 }
