@@ -9,6 +9,10 @@ public class Zombie : MonoBehaviour
     public float Health = 50f;
     bool tookDamage = false;
     bool dead = false;
+    public float damage = 30f;
+    public Transform zombie;
+    float nextTimeToAttack = 0f;
+    public float damageRate = 1000000f;
 
     public void TakeDamage(float ammount)
     {
@@ -17,13 +21,54 @@ public class Zombie : MonoBehaviour
         if (Health <= 0)
         {
             aiState = AIState.dead;
-            //Die();
         }
     }
 
     void Die()
     {
         Destroy(gameObject);
+    }
+
+    RaycastHit hit;
+    float range = 0.9f;
+
+    IEnumerator Attack()
+    {
+        while (true)
+        {
+            animator.SetBool("Attack", false);
+
+            if (Physics.Raycast(zombie.transform.position, zombie.transform.forward, out hit, range))
+            {
+                Debug.Log(hit.transform.name);
+
+                Scr_Movement_player target = hit.transform.GetComponent<Scr_Movement_player>();
+                if (target != null && Time.time >= nextTimeToAttack)
+                {
+                    nextTimeToAttack = Time.time + (30f / damageRate);
+                    float y = damage / 2f;
+                    target.ReciveDamage(y);
+                    animator.SetBool("Attack", true);
+                }
+
+            }
+            yield return new WaitForSeconds(1f);
+        }
+        
+    }
+
+    void Damage()
+    {
+        if (Physics.Raycast(zombie.transform.position, zombie.transform.forward, out hit, range))
+        {
+            Debug.Log(hit.transform.name);
+
+            Scr_Movement_player target = hit.transform.GetComponent<Scr_Movement_player>();
+            if (target != null)
+            {
+                StartCoroutine(Attack());
+            }
+        }
     }
 
     NavMeshAgent nm;
@@ -42,6 +87,7 @@ public class Zombie : MonoBehaviour
         nm = GetComponent<NavMeshAgent>();
         StartCoroutine(Think());
         target = GameObject.FindGameObjectWithTag("Player").transform;
+        StartCoroutine(Attack());
     }
 
     void Update()
@@ -86,6 +132,7 @@ public class Zombie : MonoBehaviour
                     animator.SetBool("Dead", true);
                     dead = true;
                     nm.SetDestination(transform.position);
+                    Die();
                     break;
 
 

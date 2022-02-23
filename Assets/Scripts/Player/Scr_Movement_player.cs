@@ -1,10 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.Windows;
 
 public class Scr_Movement_player : MonoBehaviour
 {
     float playerHeight = 2f;
+    float playerHealth = 100f;
+    float playerRegen = 10f;
+    float playerMaxHealth = 100f;
+    float nextRegen = 0f;
+    float regenRate = 2f;
+
+    public Slider HealthBar;
 
     [SerializeField] Transform orientation;
 
@@ -42,6 +51,11 @@ public class Scr_Movement_player : MonoBehaviour
 
     RaycastHit slopeHit;
 
+    public void ReciveDamage(float ammount)
+    {
+        playerHealth -= ammount;
+    }
+
     private bool OnSlope()
     {
         if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight / 2 + 0.5f))
@@ -63,6 +77,7 @@ public class Scr_Movement_player : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         rb.drag = 0f;
+        playerHealth = playerMaxHealth;
     }
 
 
@@ -89,6 +104,25 @@ public class Scr_Movement_player : MonoBehaviour
         {
             gravity = Time.deltaTime * -9.81f;
         }
+
+        if (Time.time >= nextRegen)
+        {
+            Debug.Log(playerHealth);
+
+            nextRegen = Time.time + 20f / regenRate;
+
+            if (playerHealth <= playerMaxHealth)
+            {
+                playerHealth += playerRegen;
+            }
+
+            if (playerHealth > playerMaxHealth)
+            {
+                playerHealth = playerMaxHealth;
+            }
+        }
+
+        HealthBar.value = playerHealth;
     }
 
     void MyInput()

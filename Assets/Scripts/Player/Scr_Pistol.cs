@@ -1,39 +1,63 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.Windows;
+using UnityEngine.SceneManagement;
 
 public class Scr_Pistol : MonoBehaviour
 {
+    public Canvas canvas;
+    public Text WeaponAmmo;
+
+    [Header("Animations")]
+    //public Animation animation;
+
+    [Header("Weapon settings")]
     public float damage = 10f;
     public float range = 100f;
     public float impactForce = 30f;
     public float fireRate = 1000000f;
 
-    public AudioSource shot;
+    [Header("Weapon Ammo settings")]
+    public float ammo = 12f;
+    public float ammoCap = 12f;
+    public float reserveAmmo = 36f;
+    public float reserveAmmoCap = 96f;
 
-    public Camera fpsCam;
+    [Header("Particles")]
     public ParticleSystem muzzleFlash;
     public GameObject impactEffect;
+    public GameObject impactEffectOther;
 
+    [Header("Other Settings")]
     private float nextTimeToFire = 0f;
+    public AudioSource shot;
+    public Camera fpsCam;
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("Fire1") && Time.time >= nextTimeToFire)
+        if (Input.GetButtonDown("Fire1") && Time.time >= nextTimeToFire && ammo > 0)
         {
             nextTimeToFire = Time.time + (20f/fireRate);
             Shoot();
         }
 
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            Reload();
+        }
+
+        WeaponAmmo.text = ammo + " / " + ammoCap + "   { " + reserveAmmo + " }";
 
     }
 
     void Shoot()
     {
-
         muzzleFlash.Play();
         shot.Play();
+        ammo = ammo - 1f;
 
         RaycastHit hit;
         if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
@@ -56,7 +80,51 @@ public class Scr_Pistol : MonoBehaviour
                 GameObject impactGO = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
                 Destroy(impactGO, 0.2f);
             }
+            else
+            {
+                GameObject impactGO = Instantiate(impactEffectOther, hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(impactGO, 0.25f);
+            }
         }
     }
 
+    void Reload()
+    {
+        if (reserveAmmo <= 0 )
+        {
+            //isReloading = false;
+            return;
+        }
+
+        if (reserveAmmo > 0)
+        {
+            //nothing at the moment.
+            float y;
+
+            //y is the invert of what's left in the clip.
+            y = 12f - ammo;
+
+            if (reserveAmmo >= y)
+            {
+                //this takes away y from the ammo reserve.
+                reserveAmmo = reserveAmmo - y;
+
+                //this puts the ammo from reserve into clip.
+                ammo += y;
+            }
+            else
+            {
+                //gets whats left in reserve.
+                y = reserveAmmo;
+
+                //adds what's left in ammo reserve. 
+                ammo += y;
+
+                //sets reserve to 0.
+                reserveAmmo = 0f;
+            }
+
+            
+        } 
+    }
 }
