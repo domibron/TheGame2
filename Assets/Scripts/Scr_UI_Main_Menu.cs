@@ -46,7 +46,7 @@ public class Scr_UI_Main_Menu : MonoBehaviour
 
 
 
-        //Map_001 load
+        //Map_001 load (Test map)
         var prefabbutton = Resources.Load("Button");
 
         GameObject Button_object = (GameObject)Instantiate(prefabbutton, new Vector3(0, 0, 0), Quaternion.identity);
@@ -59,7 +59,7 @@ public class Scr_UI_Main_Menu : MonoBehaviour
 
         Mybutton.name = "Map_001";
 
-        GameObject.Find("Map_001").GetComponentInChildren<Text>().text = "Map_001";
+        GameObject.Find("Map_001").GetComponentInChildren<Text>().text = "Test Map";
 
         Mybutton.onClick.AddListener(btn1_click);
 
