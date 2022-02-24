@@ -41,7 +41,7 @@ public class Scr_Ingame_Menu : MonoBehaviour
         }
         if (canvas.enabled)
         {
-            Time.timeScale = 0f;
+            Time.timeScale = 0;
         }
         else if (!canvas.enabled)
         {
@@ -106,7 +106,7 @@ public class Scr_Ingame_Menu : MonoBehaviour
 
         Mybutton2.transform.SetParent(this.gameObject.GetComponent<RectTransform>());
 
-        Mybutton2.transform.Translate((Screen.width * 0.5f), (Screen.height * 0.7f) - Rect_text.rect.height * 0.5f, 0);
+        Mybutton2.transform.Translate((Screen.width * 0.5f), (Screen.height * 0.6f) - Rect_text.rect.height * 0.5f, 0);
 
         Mybutton2.name = "Settings";
 

@@ -11,6 +11,7 @@ public class Scr_UI_Main_Menu : MonoBehaviour
     Text Mytext;
     Button Mybutton;
     Button Mybutton2;
+    Button Mybutton3;
     Canvas canvas;
 
     void Start()
@@ -85,12 +86,32 @@ public class Scr_UI_Main_Menu : MonoBehaviour
 
 
 
+        //Map_002 (?)
+        var prefabbutton3 = Resources.Load("Button");
+
+        GameObject Button_object3 = (GameObject)Instantiate(prefabbutton3, new Vector3(0, 0, 0), Quaternion.identity);
+
+        Mybutton3 = Button_object3.GetComponent<Button>();
+
+        Mybutton3.transform.SetParent(this.gameObject.GetComponent<RectTransform>());
+
+        Mybutton3.transform.Translate((Screen.width * 0.5f), (Screen.height * 0.4f) - Rect_text.rect.height * 0.5f, 0);
+
+        Mybutton3.name = "Map_002";
+
+        GameObject.Find("Map_002").GetComponentInChildren<Text>().text = "Map_002";
+
+        Mybutton3.onClick.AddListener(btn3_click);
+
+
+
         //debug message for me to know what's going on.
         Debug.Log("Loaded main menu");
     }
 
     void btn1_click()
     {
+        Debug.Log("loaded Map 001");
         SceneManager.LoadScene("Map_001", LoadSceneMode.Single);
     }
 
@@ -98,6 +119,12 @@ public class Scr_UI_Main_Menu : MonoBehaviour
     {
         Debug.Log("Game Quitting");
         Application.Quit();
+    }
+
+    void btn3_click()
+    {
+        Debug.Log("Loaded Map 002");
+        SceneManager.LoadScene("Map_002", LoadSceneMode.Single);
     }
 
 
