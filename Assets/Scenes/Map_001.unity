@@ -1183,7 +1183,7 @@ AudioSource:
   m_Volume: 0.141
   m_Pitch: 1
   Loop: 1
-  Mute: 0
+  Mute: 1
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 110
@@ -4232,7 +4232,7 @@ GameObject:
   - component: {fileID: 1760030252}
   - component: {fileID: 1760030251}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: KillZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
