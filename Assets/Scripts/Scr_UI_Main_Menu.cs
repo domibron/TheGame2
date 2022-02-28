@@ -7,26 +7,64 @@ using UnityEngine.SceneManagement;
 
 public class Scr_UI_Main_Menu : MonoBehaviour
 {
+    /*
     bool mainMenuOn;
     Text Mytext;
     Button Mybutton;
     Button Mybutton2;
     Button Mybutton3;
     Canvas canvas;
+    */
+
+    public Slider MasterVolume;
+    float masterVolume;
+
+    [Header("Menus")]
+    public GameObject mainMenu;
+    public GameObject mapSelectionMenu;
+    public GameObject settingsMenu;
+
 
     void Start()
     {
+        mainMenu.SetActive(true);
+        mapSelectionMenu.SetActive(false);
+        settingsMenu.SetActive(false);
+
+        LoadPrefs();
+
+
         //SceneManager.LoadScene("Main Menu", LoadSceneMode.Single);
         //MainMenu();
     }
 
     private void Awake()
     {
-        MainMenu();
+        //MainMenu();
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
     }
 
+    private void Update()
+    {
+        masterVolume = MasterVolume.value;
+        AudioListener.volume = masterVolume;
+    }
+
+
+    public void SavePrefs()
+    {
+        PlayerPrefs.SetFloat("masterVolume", masterVolume);
+        PlayerPrefs.Save();
+    }
+
+    public void LoadPrefs()
+    {
+        MasterVolume.value = PlayerPrefs.GetFloat("masterVolume", 1);
+        masterVolume = PlayerPrefs.GetFloat("masterVolume", 1);
+    }
+
+    /*
     public void MainMenu()
     {
         //Text load
@@ -108,20 +146,22 @@ public class Scr_UI_Main_Menu : MonoBehaviour
         //debug message for me to know what's going on.
         Debug.Log("Loaded main menu");
     }
+    */
 
-    void btn1_click()
+
+    public void btn1_click()
     {
         Debug.Log("loaded Map 001");
         SceneManager.LoadScene("Map_001", LoadSceneMode.Single);
     }
 
-    void btn2_click()
+    public void btn2_click()
     {
         Debug.Log("Game Quitting");
         Application.Quit();
     }
 
-    void btn3_click()
+    public void btn3_click()
     {
         Debug.Log("Loaded Map 002");
         SceneManager.LoadScene("Map_002", LoadSceneMode.Single);

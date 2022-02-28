@@ -9,6 +9,11 @@ public class Scr_Pistol : MonoBehaviour
 {
     public Canvas canvas;
     public Text WeaponAmmo;
+    public Vector3 weaponDefault;
+    public Vector3 weaponADS;
+    Vector3 WeaponPosition;
+    public GameObject gun;
+    public Animation reload;
 
     [Header("Animations")]
     //public Animation animation;
@@ -35,6 +40,17 @@ public class Scr_Pistol : MonoBehaviour
     public AudioSource shot;
     public Camera fpsCam;
 
+    IEnumerable Wait()
+    {
+        yield return new WaitForSeconds(1);
+    }
+
+
+    private void Start()
+    {
+        WeaponPosition = weaponDefault;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -49,7 +65,18 @@ public class Scr_Pistol : MonoBehaviour
             Reload();
         }
 
-        WeaponAmmo.text = ammo + " / " + ammoCap + "   { " + reserveAmmo + " }";
+        WeaponAmmo.text = ammo + "/" + ammoCap + "  {" + reserveAmmo + "}";
+
+        if (Input.GetKey(KeyCode.Mouse1))
+        {
+            WeaponPosition = Vector3.Lerp(WeaponPosition, weaponADS, 10 * Time.deltaTime);
+        }
+        else
+        {
+            WeaponPosition = Vector3.Lerp(WeaponPosition, weaponDefault, 10 * Time.deltaTime);
+        }
+        
+        transform.localPosition = WeaponPosition;
 
     }
 
@@ -90,6 +117,10 @@ public class Scr_Pistol : MonoBehaviour
 
     void Reload()
     {
+        reload.Play();
+
+        Wait();
+
         if (reserveAmmo <= 0 )
         {
             //isReloading = false;
