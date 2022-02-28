@@ -13,7 +13,7 @@ public class Scr_Pistol : MonoBehaviour
     public Vector3 weaponADS;
     Vector3 WeaponPosition;
     public GameObject gun;
-    public Animation reload;
+    public Animation PistolAnimation;
 
     [Header("Animations")]
     //public Animation animation;
@@ -39,12 +39,6 @@ public class Scr_Pistol : MonoBehaviour
     private float nextTimeToFire = 0f;
     public AudioSource shot;
     public Camera fpsCam;
-
-    IEnumerable Wait()
-    {
-        yield return new WaitForSeconds(1);
-    }
-
 
     private void Start()
     {
@@ -82,6 +76,7 @@ public class Scr_Pistol : MonoBehaviour
 
     void Shoot()
     {
+        //PistolAnimation.Play("shoot");
         muzzleFlash.Play();
         shot.Play();
         ammo = ammo - 1f;
@@ -117,9 +112,7 @@ public class Scr_Pistol : MonoBehaviour
 
     void Reload()
     {
-        reload.Play();
-
-        Wait();
+        //PistolAnimation.Play("reload");
 
         if (reserveAmmo <= 0 )
         {

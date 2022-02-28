@@ -11,13 +11,30 @@ public class Scr_Ingame_Menu : MonoBehaviour
     Button Mybutton;
     Button Mybutton2;
     Button Mybutton3;
-    public Canvas canvas;
-    private bool isShowing;
+    public Slider MasterVolume;
+    public float masterVolume;
+    public Text MasterVolumeText;
 
-    private void Awake()
+    public Canvas canvas;
+    public GameObject mainPauseMenu;
+    public GameObject comfirmQuit;
+    public GameObject settingsMenu;
+    Scr_UI_Main_Menu MainMenu;
+
+    private bool isShowing = false;
+
+    private void Start()
     {
-        MenuMake();
-        
+        //MainMenu.LoadPrefs();
+
+        //LoadSettings();
+        MasterVolume.value = PlayerPrefs.GetFloat("masterVolume", 1);
+        masterVolume = PlayerPrefs.GetFloat("masterVolume", 1);
+
+        canvas.enabled = false;
+        mainPauseMenu.SetActive(false);
+        comfirmQuit.SetActive(false);
+        settingsMenu.SetActive(false);
     }
 
     private void Update()
@@ -38,17 +55,27 @@ public class Scr_Ingame_Menu : MonoBehaviour
         {
             isShowing = !isShowing;
             canvas.enabled = isShowing;
+            mainPauseMenu.SetActive(isShowing);
+            comfirmQuit.SetActive(false);
+            settingsMenu.SetActive(false);
         }
-        if (canvas.enabled)
+        if (isShowing == true)
         {
             Time.timeScale = 0;
         }
-        else if (!canvas.enabled)
+        else if (isShowing == false)
         {
             Time.timeScale = 1;
         }
+
+
+        //settings update values
+        MasterVolumeText.text = "Master Volume: " + ((int)(masterVolume * 100));
+        masterVolume = MasterVolume.value;
+        AudioListener.volume = masterVolume;
     }
 
+    /*
     void MenuMake()
     {
         //Text load
@@ -143,23 +170,42 @@ public class Scr_Ingame_Menu : MonoBehaviour
         //hides canvas
         canvas.enabled = false;
     }
+    */
 
-    void btn1_click()
+    public void btn1_click()
     {
         isShowing = !isShowing;
         canvas.enabled = isShowing;
+        mainPauseMenu.SetActive(isShowing);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
-    void btn2_click()
+    public void btn2_click()
     {
-        
+        //SaveSettings();
+        Application.Quit();
     }
 
-    void btn3_click()
+    public void btn3_click()
     {
         Debug.Log("Loading main menu");
         SceneManager.LoadScene("Main Menu", LoadSceneMode.Single);
     }
+
+    /*
+    //saves all setting values
+    public void SaveSettings()
+    {
+        SaveSystem.SaveSettingsToFile(this);
+    }
+
+    //loads all setting values
+    public void LoadSettings()
+    {
+        GameSettingsData data = SaveSystem.LoadGameSettings();
+
+        masterVolume = data.masterGameVolume;
+    }
+    */
 }
