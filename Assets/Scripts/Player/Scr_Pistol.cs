@@ -7,6 +7,9 @@ using UnityEngine.SceneManagement;
 
 public class Scr_Pistol : MonoBehaviour
 {
+    /*
+    public Scr_Ingame_Menu gameUI;
+
     public Canvas canvas;
     public Text WeaponAmmo;
     public Vector3 weaponDefault;
@@ -101,6 +104,8 @@ public class Scr_Pistol : MonoBehaviour
             {
                 GameObject impactGO = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
                 Destroy(impactGO, 0.2f);
+
+                gameUI.IncreassScore(10);
             }
             else
             {
@@ -151,4 +156,5 @@ public class Scr_Pistol : MonoBehaviour
             
         } 
     }
+    */
 }

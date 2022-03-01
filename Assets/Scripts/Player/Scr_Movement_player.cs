@@ -20,7 +20,7 @@ public class Scr_Movement_player : MonoBehaviour
     [Header("Movement")]
     public float sprintSpeed = 10f;
     public float moveSpeed = 4f;
-    public float airMultiplier = 0.1f;
+    public float airMultiplier = 1f;
     public float movementMultiplier = 10f;
 
     [Header("Jumping")]
@@ -107,8 +107,6 @@ public class Scr_Movement_player : MonoBehaviour
 
         if (Time.time >= nextRegen)
         {
-            Debug.Log(playerHealth);
-
             nextRegen = Time.time + 20f / regenRate;
 
             if (playerHealth <= playerMaxHealth)
@@ -187,7 +185,7 @@ public class Scr_Movement_player : MonoBehaviour
         else if (!isGrounded)
         {
             //jumping in mid air force
-            rb.AddForce(jumpMoveDirection.normalized * ((moveSpeed * movementMultiplier * airMultiplier) * 0f) * gravity, ForceMode.Acceleration);
+            rb.AddForce(jumpMoveDirection.normalized * moveSpeed * airMultiplier * 0f, ForceMode.Acceleration);
             rb.AddForce(0, -gravity * 17f, 0, ForceMode.Acceleration);
         }
     }

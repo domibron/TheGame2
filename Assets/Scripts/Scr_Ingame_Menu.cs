@@ -7,34 +7,62 @@ using UnityEngine.SceneManagement;
 
 public class Scr_Ingame_Menu : MonoBehaviour
 {
-    Text Mytext;
-    Button Mybutton;
-    Button Mybutton2;
-    Button Mybutton3;
     public Slider MasterVolume;
     public float masterVolume;
     public Text MasterVolumeText;
+    public Dropdown VideoFullScreen;
+    public Dropdown VideoResolution;
+
+    //UI from other canvas
+    public Text ScoreText;
+    public Text HighScoreText;
+
+    FullScreenMode settingVid;
+
+    public int score;
+    public int highScore;
 
     public Canvas canvas;
     public GameObject mainPauseMenu;
     public GameObject comfirmQuit;
     public GameObject settingsMenu;
-    Scr_UI_Main_Menu MainMenu;
 
     private bool isShowing = false;
 
     private void Start()
     {
-        //MainMenu.LoadPrefs();
+        //loading save values and if not default values are used instead.
+        if (Save_Manager.instance.hasLoaded)
+        {
+            masterVolume = Save_Manager.instance.activeSave.masterVolumeSave;
+            MasterVolume.value = Save_Manager.instance.activeSave.masterVolumeSave;
 
-        //LoadSettings();
-        MasterVolume.value = PlayerPrefs.GetFloat("masterVolume", 1);
-        masterVolume = PlayerPrefs.GetFloat("masterVolume", 1);
+            highScore = Save_Manager.instance.activeSave.HighScore;
 
+            VideoResolution.value = Save_Manager.instance.activeSave.ScreenResolution;
+
+            VideoFullScreen.value = Save_Manager.instance.activeSave.FullscreenMode;
+        }
+        else
+        {
+            Save_Manager.instance.activeSave.masterVolumeSave = 1f;
+
+            Save_Manager.instance.activeSave.FullscreenMode = 4;
+
+            Save_Manager.instance.activeSave.ScreenResolution = 3;
+
+            Save_Manager.instance.activeSave.HighScore = 18002832;
+        }
+
+        //sets the menus correctly so there is no bug
         canvas.enabled = false;
         mainPauseMenu.SetActive(false);
         comfirmQuit.SetActive(false);
         settingsMenu.SetActive(false);
+
+        LoadSettings();
+        HighScoreText.text = "High Score: " + highScore;
+        score = 0;
     }
 
     private void Update()
@@ -59,6 +87,7 @@ public class Scr_Ingame_Menu : MonoBehaviour
             comfirmQuit.SetActive(false);
             settingsMenu.SetActive(false);
         }
+
         if (isShowing == true)
         {
             Time.timeScale = 0;
@@ -73,104 +102,113 @@ public class Scr_Ingame_Menu : MonoBehaviour
         MasterVolumeText.text = "Master Volume: " + ((int)(masterVolume * 100));
         masterVolume = MasterVolume.value;
         AudioListener.volume = masterVolume;
+
+
+        //score and high score system
+        ScoreText.text = "Score: " + score;
+        HighScoreText.text = "High Score: " + highScore;
+
+        if (score > highScore)
+        {
+            Save_Manager.instance.activeSave.HighScore = score;
+
+            Save_Manager.instance.Save();
+
+            Save_Manager.instance.Load();
+
+            highScore = Save_Manager.instance.activeSave.HighScore;
+        }
     }
 
-    /*
-    void MenuMake()
+    public void IncreassScore(int y)
     {
-        //Text load
-        var prefabtext = Resources.Load("Text");
-
-        GameObject Text_object = (GameObject)Instantiate(prefabtext, new Vector3(0, 0, 0), Quaternion.identity);
-
-        Mytext = Text_object.GetComponent<Text>();
-
-        Mytext.transform.SetParent(this.gameObject.GetComponent<RectTransform>());
-
-        Mytext.alignment = TextAnchor.MiddleCenter;
-
-        Mytext.fontSize = 20;
-
-        Mytext.color = Color.white;
-
-        Mytext.fontStyle = FontStyle.Bold;
-
-        Mytext.text = "Paused";
-
-        RectTransform Rect_text = Text_object.GetComponent<RectTransform>();
-
-        Mytext.transform.Translate((Screen.width * 0.5f), (Screen.height * 0.9f) - Rect_text.rect.height * 0.5f, 0);
-
-
-
-        //Puause button
-        var prefabbutton = Resources.Load("Button");
-
-        GameObject Button_object = (GameObject)Instantiate(prefabbutton, new Vector3(0, 0, 0), Quaternion.identity);
-
-        Mybutton = Button_object.GetComponent<Button>();
-
-        Mybutton.transform.SetParent(this.gameObject.GetComponent<RectTransform>());
-
-        Mybutton.transform.Translate((Screen.width * 0.5f), (Screen.height * 0.8f) - Rect_text.rect.height * 0.5f, 0);
-
-        Mybutton.name = "Resume";
-
-        Button_object.GetComponentInChildren<Text>().text = "Resume";
-
-        //GameObject.Find("Resume").GetComponentInChildren<Text>().text = "Resume";
-
-        Mybutton.onClick.AddListener(btn1_click);
-
-
-
-        //Settings button
-        var prefabbutton2 = Resources.Load("Button");
-
-        GameObject Button_object2 = (GameObject)Instantiate(prefabbutton2, new Vector3(0, 0, 0), Quaternion.identity);
-
-        Mybutton2 = Button_object2.GetComponent<Button>();
-
-        Mybutton2.transform.SetParent(this.gameObject.GetComponent<RectTransform>());
-
-        Mybutton2.transform.Translate((Screen.width * 0.5f), (Screen.height * 0.6f) - Rect_text.rect.height * 0.5f, 0);
-
-        Mybutton2.name = "Settings";
-
-        Button_object2.GetComponentInChildren<Text>().text = "Settings";
-
-        //GameObject.Find("Resume").GetComponentInChildren<Text>().text = "Resume";
-
-        Mybutton2.onClick.AddListener(btn2_click);
-
-
-
-
-        //Main Menu button
-        var prefabbutton3 = Resources.Load("Button");
-
-        GameObject Button_object3 = (GameObject)Instantiate(prefabbutton3, new Vector3(0, 0, 0), Quaternion.identity);
-
-        Mybutton3 = Button_object3.GetComponent<Button>();
-
-        Mybutton3.transform.SetParent(this.gameObject.GetComponent<RectTransform>());
-
-        Mybutton3.transform.Translate((Screen.width * 0.5f), (Screen.height * 0.7f) - Rect_text.rect.height * 0.5f, 0);
-
-        Mybutton3.name = "Main Menu";
-
-        Button_object3.GetComponentInChildren<Text>().text = "Main Menu";
-
-        //GameObject.Find("Resume").GetComponentInChildren<Text>().text = "Resume";
-
-        Mybutton3.onClick.AddListener(btn3_click);
-
-
-
-        //hides canvas
-        canvas.enabled = false;
+        score = score + y;
     }
-    */
+
+    //sets the fullscreen mode depending on the dropbox value
+    public void FullScreen()
+    {
+        switch (VideoFullScreen.value)
+        {
+            case 0:
+                settingVid = FullScreenMode.Windowed;
+                break;
+
+            case 1:
+                settingVid = FullScreenMode.MaximizedWindow;
+                break;
+
+            case 2:
+                settingVid = FullScreenMode.FullScreenWindow;
+                break;
+
+            case 3:
+                settingVid = FullScreenMode.ExclusiveFullScreen;
+                break;
+        }
+    }
+
+    //set the resolution for the screen depending of the dropbox value.
+    public void Resolution()
+    {
+        switch (VideoResolution.value)
+        {
+            case 0:
+                Screen.SetResolution(4096, 2160, settingVid, 60);
+                break;
+
+            case 1:
+                Screen.SetResolution(3840, 2160, settingVid, 60);
+                break;
+
+            case 2:
+                Screen.SetResolution(2048, 1152, settingVid, 60);
+                break;
+
+            case 3:
+                Screen.SetResolution(1920, 1080, settingVid, 60);
+                break;
+
+            case 4:
+                Screen.SetResolution(1280, 720, settingVid, 60);
+                break;
+
+            case 5:
+                Screen.SetResolution(640, 480, settingVid, 60);
+                break;
+        }
+    }
+
+    //save values after the button is clicked
+    public void SaveSettings()
+    {
+        //save the values that are set
+        Save_Manager.instance.activeSave.masterVolumeSave = masterVolume;
+
+        Save_Manager.instance.activeSave.FullscreenMode = VideoFullScreen.value;
+
+        Save_Manager.instance.activeSave.ScreenResolution = VideoResolution.value;
+
+        //force save
+        Save_Manager.instance.Save();
+    }
+
+    //loads the settings if the settings have been changed before.
+    public void LoadSettings()
+    {
+        //force load the current values
+        Save_Manager.instance.Load();
+
+        //save values
+        masterVolume = Save_Manager.instance.activeSave.masterVolumeSave;
+        MasterVolume.value = Save_Manager.instance.activeSave.masterVolumeSave;
+
+        VideoFullScreen.value = Save_Manager.instance.activeSave.FullscreenMode;
+
+        VideoResolution.value = Save_Manager.instance.activeSave.ScreenResolution;
+
+        highScore = Save_Manager.instance.activeSave.HighScore;
+    }
 
     public void btn1_click()
     {
@@ -183,7 +221,6 @@ public class Scr_Ingame_Menu : MonoBehaviour
 
     public void btn2_click()
     {
-        //SaveSettings();
         Application.Quit();
     }
 
@@ -192,20 +229,4 @@ public class Scr_Ingame_Menu : MonoBehaviour
         Debug.Log("Loading main menu");
         SceneManager.LoadScene("Main Menu", LoadSceneMode.Single);
     }
-
-    /*
-    //saves all setting values
-    public void SaveSettings()
-    {
-        SaveSystem.SaveSettingsToFile(this);
-    }
-
-    //loads all setting values
-    public void LoadSettings()
-    {
-        GameSettingsData data = SaveSystem.LoadGameSettings();
-
-        masterVolume = data.masterGameVolume;
-    }
-    */
 }
