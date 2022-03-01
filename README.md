@@ -1,2 +1,2 @@
-# [Add name please]
+# Solitary Edge
  This is a Tech Demo.
