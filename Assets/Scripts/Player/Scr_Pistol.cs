@@ -13,10 +13,10 @@ public class Scr_Pistol : MonoBehaviour
     public Vector3 weaponADS;
     Vector3 WeaponPosition;
     public GameObject gun;
-    public Animation PistolAnimation;
+    
 
     [Header("Animations")]
-    //public Animation animation;
+    public Animation PistolAnimation;
 
     [Header("Weapon settings")]
     public float damage = 10f;
@@ -76,7 +76,7 @@ public class Scr_Pistol : MonoBehaviour
 
     void Shoot()
     {
-        //PistolAnimation.Play("shoot");
+        
         muzzleFlash.Play();
         shot.Play();
         ammo = ammo - 1f;
@@ -112,7 +112,7 @@ public class Scr_Pistol : MonoBehaviour
 
     void Reload()
     {
-        //PistolAnimation.Play("reload");
+        PistolAnimation.Play();
 
         if (reserveAmmo <= 0 )
         {

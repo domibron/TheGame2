@@ -27,8 +27,10 @@ public class Scr_UI_Main_Menu : MonoBehaviour
     public float masterVolume;
 
     public Dropdown VideoResolution;
+    public Dropdown VideoFullScreed;
 
-    FullScreenMode settingVid = FullScreenMode.MaximizedWindow;
+    FullScreenMode settingVid;
+
 
     [Header("Menus")]
     public GameObject mainMenu;
@@ -62,7 +64,31 @@ public class Scr_UI_Main_Menu : MonoBehaviour
         masterVolume = MasterVolume.value;
         AudioListener.volume = masterVolume;
 
+        FullScreen();
+
         Resolution();
+    }
+
+    public void FullScreen()
+    {
+        switch (VideoFullScreed.value)
+        {
+            case 0:
+                settingVid = FullScreenMode.Windowed;
+                break;
+
+            case 1:
+                settingVid = FullScreenMode.MaximizedWindow;
+                break;
+
+            case 2:
+                settingVid = FullScreenMode.FullScreenWindow;
+                break;
+
+            case 3:
+                settingVid = FullScreenMode.ExclusiveFullScreen;
+                break;
+        }
     }
 
     public void Resolution()
@@ -70,11 +96,27 @@ public class Scr_UI_Main_Menu : MonoBehaviour
         switch (VideoResolution.value)
         {
             case 0:
-                Screen.SetResolution(640, 480, settingVid, 60);
+                Screen.SetResolution(4096, 2160, settingVid, 60);
                 break;
 
             case 1:
-                Screen.SetResolution(1080, 720, settingVid, 60);
+                Screen.SetResolution(3840, 2160, settingVid, 60);
+                break;
+
+            case 2:
+                Screen.SetResolution(2048, 1152, settingVid, 60);
+                break;
+
+            case 3:
+                Screen.SetResolution(1920, 1080, settingVid, 60);
+                break;
+
+            case 4:
+                Screen.SetResolution(1280, 720, settingVid, 60);
+                break;
+
+            case 5:
+                Screen.SetResolution(640, 480, settingVid, 60);
                 break;
         }
     }
