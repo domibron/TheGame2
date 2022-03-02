@@ -56,7 +56,7 @@ public class Scr_Weapon_manager : MonoBehaviour
         }
         else if (AkGun.activeSelf)
         {
-
+            ak.ShootAkActive(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, AkGun, WeaponAmmo);
         }
     }
 }
@@ -74,7 +74,7 @@ public class Pistol : MonoBehaviour
     float reserveAmmoCap = 96f;
     float fireRate = 80f;
     float range = 100f;
-    float damage = 30f;
+    float damage = 60f;
     float impactForce = 4f;
     Vector3 WeaponPosition;
 
@@ -165,7 +165,7 @@ public class Pistol : MonoBehaviour
             float y;
 
             //y is the invert of what's left in the clip.
-            y = 12f - ammo;
+            y = ammoCap - ammo;
 
             if (reserveAmmo >= y)
             {
@@ -190,9 +190,129 @@ public class Pistol : MonoBehaviour
     }
 }
 
-public class AK
+public class AK : MonoBehaviour
 {
-    
+    float nextTimeToFire = 2f;
+    float ammo = 30f;
+    float ammoCap = 30f;
+    float reserveAmmo = 120f;
+    float reserveAmmoCap = 360f;
+    float fireRate = 160f;
+    float range = 300f;
+    float damage = 20f;
+    float impactForce = 4f;
+    Vector3 WeaponPosition;
+
+    Vector3 weaponADS;
+    Vector3 weaponDefault;
+
+    public void ShootAkActive(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, GameObject gun, Text WeaponAmmo)
+    {
+        weaponADS.Set(0f, -0.2177f, -0.4f);
+        weaponDefault.Set(0.45f, -0.4f, 0.49f);
+
+        WeaponAmmo.text = ammo + "/" + ammoCap + "  {" + reserveAmmo + "}";
+
+        gun.transform.localPosition = WeaponPosition;
+
+        if (Input.GetKey(KeyCode.Mouse0) && Time.time >= nextTimeToFire && ammo > 0)
+        {
+            nextTimeToFire = Time.time + 20f / fireRate;
+            Shoot(fpsCam, impactEffect, impactEffectOther, gameCanvasScript);
+        }
+
+        if (Input.GetKey(KeyCode.Mouse1))
+        {
+            WeaponPosition = Vector3.Lerp(WeaponPosition, weaponADS, 10 * Time.deltaTime);
+        }
+        else
+        {
+            WeaponPosition = Vector3.Lerp(WeaponPosition, weaponDefault, 10 * Time.deltaTime);
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            Reload();
+        }
+    }
+
+    public void Shoot(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript)
+    {
+        Debug.Log("Shot");
+        RaycastHit hit;
+        ammo = ammo - 1f;
+
+        if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
+        {
+            //accessing the zombie for the TakeDamage function
+            Zombie target = hit.transform.GetComponent<Zombie>();
+            if (target != null)
+            {
+                target.TakeDamage(damage);
+            }
+
+            //force to push rigidbodies back
+            if (hit.rigidbody != null)
+            {
+                hit.rigidbody.AddForce(-hit.normal * impactForce);
+            }
+
+            //related to the partical system
+            if (hit.transform.tag == "Zombie")
+            {
+                //adds 10 pints to the score
+                gameCanvasScript.IncreassScore(10);
+
+                GameObject impactGO = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(impactGO, 0.2f);
+            }
+
+            else
+            {
+                GameObject impactGO = Instantiate(impactEffectOther, hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(impactGO, 0.25f);
+            }
+        }
+    }
+
+    void Reload()
+    {
+        //PistolAnimation.Play();
+
+        if (reserveAmmo <= 0)
+        {
+            return;
+        }
+
+        if (reserveAmmo > 0)
+        {
+            //nothing at the moment.
+            float y;
+
+            //y is the invert of what's left in the clip.
+            y = ammoCap - ammo;
+
+            if (reserveAmmo >= y)
+            {
+                //this takes away y from the ammo reserve.
+                reserveAmmo = reserveAmmo - y;
+
+                //this puts the ammo from reserve into clip.
+                ammo += y;
+            }
+            else
+            {
+                //gets whats left in reserve.
+                y = reserveAmmo;
+
+                //adds what's left in ammo reserve. 
+                ammo += y;
+
+                //sets reserve to 0.
+                reserveAmmo = 0f;
+            }
+        }
+    }
 }
 
 
