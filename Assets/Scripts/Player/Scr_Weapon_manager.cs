@@ -21,6 +21,11 @@ public class Scr_Weapon_manager : MonoBehaviour
 
     public Camera fpsCam;
 
+    public AudioSource shot;
+
+    Pistol_Funtions pistolFuntions;
+    Ak_Functions akFunctions;
+
     //classes
     Pistol pistol = new Pistol();
     AK ak = new AK();
@@ -32,6 +37,10 @@ public class Scr_Weapon_manager : MonoBehaviour
         AkGun.SetActive(false);
 
         PistolGun.SetActive(true);
+
+        pistolFuntions = PistolGun.GetComponent<Pistol_Funtions>();
+
+        akFunctions = AkGun.GetComponent<Ak_Functions>();
     }
 
     private void Update()
@@ -52,11 +61,11 @@ public class Scr_Weapon_manager : MonoBehaviour
         //main weapon physics and settings tuned for the weapon
         if (PistolGun.activeSelf)
         {
-            pistol.ShootPistolActive(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, PistolGun, WeaponAmmo);
+            pistol.ShootPistolActive(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, PistolGun, WeaponAmmo, shot, pistolFuntions);
         }
         else if (AkGun.activeSelf)
         {
-            ak.ShootAkActive(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, AkGun, WeaponAmmo);
+            ak.ShootAkActive(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, AkGun, WeaponAmmo, shot, akFunctions);
         }
     }
 }
@@ -74,14 +83,14 @@ public class Pistol : MonoBehaviour
     float reserveAmmoCap = 96f;
     float fireRate = 80f;
     float range = 100f;
-    float damage = 60f;
+    float damage = 20f;
     float impactForce = 4f;
     Vector3 WeaponPosition;
 
     Vector3 weaponADS;
     Vector3 weaponDefault;
 
-    public void ShootPistolActive(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, GameObject gun, Text WeaponAmmo)
+    public void ShootPistolActive(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, GameObject gun, Text WeaponAmmo, AudioSource shot, Pistol_Funtions pistolFuntions)
     {
         weaponADS.Set(0f, -0.146f, 0.35f);
         weaponDefault.Set(0.34f, -0.27f, 0.49f);
@@ -93,7 +102,7 @@ public class Pistol : MonoBehaviour
         if (Input.GetKey(KeyCode.Mouse0) && Time.time >= nextTimeToFire && ammo > 0)
         {
             nextTimeToFire = Time.time + 20f / fireRate;
-            Shoot(fpsCam, impactEffect, impactEffectOther, gameCanvasScript);
+            Shoot(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, shot);
         }
 
         if (Input.GetKey(KeyCode.Mouse1))
@@ -107,15 +116,16 @@ public class Pistol : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            Reload();
+            Reload(pistolFuntions);
         }
     }
 
-    public void Shoot(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript)
+    public void Shoot(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, AudioSource shot)
     {
         Debug.Log("Shot");
         RaycastHit hit;
         ammo = ammo - 1f;
+        shot.Play();
 
         if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
         {
@@ -139,20 +149,20 @@ public class Pistol : MonoBehaviour
                 gameCanvasScript.IncreassScore(10);
 
                 GameObject impactGO = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
-                Destroy(impactGO, 0.2f);
+                Destroy(impactGO, 2f);
             }
 
             else
             {
                 GameObject impactGO = Instantiate(impactEffectOther, hit.point, Quaternion.LookRotation(hit.normal));
-                Destroy(impactGO, 0.25f);
+                Destroy(impactGO, 2f);
             }
         }
     }
 
-    void Reload()
+    void Reload(Pistol_Funtions pistolFuntions)
     {
-        //PistolAnimation.Play();
+        pistolFuntions.ReloadAnimation();
 
         if (reserveAmmo <= 0)
         {
@@ -199,14 +209,14 @@ public class AK : MonoBehaviour
     float reserveAmmoCap = 360f;
     float fireRate = 160f;
     float range = 300f;
-    float damage = 20f;
+    float damage = 60f;
     float impactForce = 4f;
     Vector3 WeaponPosition;
 
     Vector3 weaponADS;
     Vector3 weaponDefault;
 
-    public void ShootAkActive(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, GameObject gun, Text WeaponAmmo)
+    public void ShootAkActive(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, GameObject gun, Text WeaponAmmo, AudioSource shot, Ak_Functions akFunctions)
     {
         weaponADS.Set(0f, -0.2177f, -0.4f);
         weaponDefault.Set(0.45f, -0.4f, 0.49f);
@@ -218,7 +228,7 @@ public class AK : MonoBehaviour
         if (Input.GetKey(KeyCode.Mouse0) && Time.time >= nextTimeToFire && ammo > 0)
         {
             nextTimeToFire = Time.time + 20f / fireRate;
-            Shoot(fpsCam, impactEffect, impactEffectOther, gameCanvasScript);
+            Shoot(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, shot);
         }
 
         if (Input.GetKey(KeyCode.Mouse1))
@@ -232,15 +242,16 @@ public class AK : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            Reload();
+            Reload(akFunctions);
         }
     }
 
-    public void Shoot(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript)
+    public void Shoot(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, AudioSource shot)
     {
         Debug.Log("Shot");
         RaycastHit hit;
         ammo = ammo - 1f;
+        shot.Play();
 
         if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
         {
@@ -264,20 +275,20 @@ public class AK : MonoBehaviour
                 gameCanvasScript.IncreassScore(10);
 
                 GameObject impactGO = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
-                Destroy(impactGO, 0.2f);
+                Destroy(impactGO, 2f);
             }
 
             else
             {
                 GameObject impactGO = Instantiate(impactEffectOther, hit.point, Quaternion.LookRotation(hit.normal));
-                Destroy(impactGO, 0.25f);
+                Destroy(impactGO, 2f);
             }
         }
     }
 
-    void Reload()
+    void Reload(Ak_Functions akFunctions)
     {
-        //PistolAnimation.Play();
+        akFunctions.ReloadAnimation();
 
         if (reserveAmmo <= 0)
         {
