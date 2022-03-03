@@ -68,6 +68,15 @@ public class Scr_Weapon_manager : MonoBehaviour
             ak.ShootAkActive(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, AkGun, WeaponAmmo, shot, akFunctions);
         }
     }
+
+
+    public void AmmoFill()
+    {
+        pistol.MaxAmmo();
+
+        ak.MaxAmmo();
+    }
+
 }
 
 
@@ -78,13 +87,13 @@ public class Pistol : MonoBehaviour
 {
     float nextTimeToFire = 2f;
     float ammo = 12f;
-    float ammoCap = 12f;
+    readonly float ammoCap = 12f;
     float reserveAmmo = 36f;
     float reserveAmmoCap = 96f;
-    float fireRate = 80f;
-    float range = 100f;
-    float damage = 20f;
-    float impactForce = 4f;
+    readonly float fireRate = 80f;
+    readonly float range = 100f;
+    readonly float damage = 20f;
+    readonly float impactForce = 4f;
     Vector3 WeaponPosition;
 
     Vector3 weaponADS;
@@ -92,6 +101,7 @@ public class Pistol : MonoBehaviour
 
     public void ShootPistolActive(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, GameObject gun, Text WeaponAmmo, AudioSource shot, Pistol_Funtions pistolFuntions)
     {
+        //weapon positions
         weaponADS.Set(0f, -0.146f, 0.35f);
         weaponDefault.Set(0.34f, -0.27f, 0.49f);
 
@@ -99,7 +109,7 @@ public class Pistol : MonoBehaviour
 
         gun.transform.localPosition = WeaponPosition;
 
-        if (Input.GetKey(KeyCode.Mouse0) && Time.time >= nextTimeToFire && ammo > 0)
+        if (Input.GetKeyDown(KeyCode.Mouse0) && Time.time >= nextTimeToFire && ammo > 0)
         {
             nextTimeToFire = Time.time + 20f / fireRate;
             Shoot(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, shot);
@@ -122,12 +132,10 @@ public class Pistol : MonoBehaviour
 
     public void Shoot(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, AudioSource shot)
     {
-        Debug.Log("Shot");
-        RaycastHit hit;
-        ammo = ammo - 1f;
+        ammo--;
         shot.Play();
 
-        if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
+        if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out RaycastHit hit, range))
         {
             //accessing the zombie for the TakeDamage function
             Zombie target = hit.transform.GetComponent<Zombie>();
@@ -180,7 +188,7 @@ public class Pistol : MonoBehaviour
             if (reserveAmmo >= y)
             {
                 //this takes away y from the ammo reserve.
-                reserveAmmo = reserveAmmo - y;
+                reserveAmmo -= y;
 
                 //this puts the ammo from reserve into clip.
                 ammo += y;
@@ -198,19 +206,25 @@ public class Pistol : MonoBehaviour
             }
         }
     }
+
+    public void MaxAmmo()
+    {
+        reserveAmmo = reserveAmmoCap;
+        ammo = ammoCap;
+    }
 }
 
 public class AK : MonoBehaviour
 {
     float nextTimeToFire = 2f;
     float ammo = 30f;
-    float ammoCap = 30f;
+    readonly float ammoCap = 30f;
     float reserveAmmo = 120f;
     float reserveAmmoCap = 360f;
-    float fireRate = 160f;
-    float range = 300f;
-    float damage = 60f;
-    float impactForce = 4f;
+    readonly float fireRate = 160f;
+    readonly float range = 300f;
+    readonly float damage = 60f;
+    readonly float impactForce = 4f;
     Vector3 WeaponPosition;
 
     Vector3 weaponADS;
@@ -248,12 +262,10 @@ public class AK : MonoBehaviour
 
     public void Shoot(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, AudioSource shot)
     {
-        Debug.Log("Shot");
-        RaycastHit hit;
-        ammo = ammo - 1f;
+        ammo--;
         shot.Play();
 
-        if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
+        if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out RaycastHit hit, range))
         {
             //accessing the zombie for the TakeDamage function
             Zombie target = hit.transform.GetComponent<Zombie>();
@@ -306,7 +318,7 @@ public class AK : MonoBehaviour
             if (reserveAmmo >= y)
             {
                 //this takes away y from the ammo reserve.
-                reserveAmmo = reserveAmmo - y;
+                reserveAmmo -= y;
 
                 //this puts the ammo from reserve into clip.
                 ammo += y;
@@ -323,6 +335,11 @@ public class AK : MonoBehaviour
                 reserveAmmo = 0f;
             }
         }
+    }
+    public void MaxAmmo()
+    {
+        reserveAmmo = reserveAmmoCap;
+        ammo = ammoCap;
     }
 }
 

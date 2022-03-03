@@ -7,21 +7,28 @@ using UnityEngine.SceneManagement;
 
 public class Scr_Ingame_Menu : MonoBehaviour
 {
+    [Header("Canvas Objects")]
     public Slider MasterVolume;
     public float masterVolume;
     public Text MasterVolumeText;
     public Dropdown VideoFullScreen;
     public Dropdown VideoResolution;
+    public Slider Fov;
+    public Text FovText;
 
     //UI from other canvas
     public Text ScoreText;
     public Text HighScoreText;
 
+    [Header("Varibles")]
     FullScreenMode settingVid;
 
     public int score;
     public int highScore;
+    public float fov;
+    public Camera fpsCam;
 
+    [Header("pannels")]
     public Canvas canvas;
     public GameObject mainPauseMenu;
     public GameObject comfirmQuit;
@@ -42,6 +49,8 @@ public class Scr_Ingame_Menu : MonoBehaviour
             VideoResolution.value = Save_Manager.instance.activeSave.ScreenResolution;
 
             VideoFullScreen.value = Save_Manager.instance.activeSave.FullscreenMode;
+
+            Fov.value = Save_Manager.instance.activeSave.FOV;
         }
         else
         {
@@ -52,6 +61,8 @@ public class Scr_Ingame_Menu : MonoBehaviour
             Save_Manager.instance.activeSave.ScreenResolution = 3;
 
             Save_Manager.instance.activeSave.HighScore = 18002832;
+
+            Save_Manager.instance.activeSave.FOV = 100;
         }
 
         //sets the menus correctly so there is no bug
@@ -103,6 +114,9 @@ public class Scr_Ingame_Menu : MonoBehaviour
         masterVolume = MasterVolume.value;
         AudioListener.volume = masterVolume;
 
+        FovText.text = "Fov: " + fov;
+        fov = Fov.value;
+        fpsCam.fieldOfView = fov;
 
         //score and high score system
         ScoreText.text = "Score: " + score;
@@ -189,6 +203,8 @@ public class Scr_Ingame_Menu : MonoBehaviour
 
         Save_Manager.instance.activeSave.ScreenResolution = VideoResolution.value;
 
+        Save_Manager.instance.activeSave.FOV = Fov.value;
+
         //force save
         Save_Manager.instance.Save();
     }
@@ -208,6 +224,9 @@ public class Scr_Ingame_Menu : MonoBehaviour
         VideoResolution.value = Save_Manager.instance.activeSave.ScreenResolution;
 
         highScore = Save_Manager.instance.activeSave.HighScore;
+
+        fov = Save_Manager.instance.activeSave.FOV;
+        Fov.value = Save_Manager.instance.activeSave.FOV;
     }
 
     public void btn1_click()

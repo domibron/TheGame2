@@ -46,8 +46,10 @@ public class Save_Manager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("COULD NOT FIND SAVE! on path ~ " + dataPath + "/" + activeSave.saveName + ".save");
+            Debug.LogError("COULD NOT FIND SAVE! on path ~ " + dataPath + "/" + activeSave.saveName + ".save | Generating new blank slate. This is not recommened!");
             hasLoaded = false;
+
+            Save();
         }
     }
 
@@ -74,4 +76,10 @@ public class SaveData
     public int ScreenResolution;
 
     public int HighScore;
+
+    public float FOV;
+
+    public float MainMouseSensitivity;
+
+    public float Rounds;
 }

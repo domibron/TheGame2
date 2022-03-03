@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4351252647364001994}
   - component: {fileID: 4351252647364001995}
   - component: {fileID: 4351252647364001998}
+  - component: {fileID: 403138344}
   m_Layer: 0
   m_Name: zombie
   m_TagString: Zombie
@@ -44,7 +45,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 0.5
+  m_Speed: 2
   m_Acceleration: 10000
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -72,9 +73,10 @@ MonoBehaviour:
   damage: 10
   zombie: {fileID: 4351252647364001996}
   damageRate: 1000000
+  zombieCollider: {fileID: 4351252647364001998}
   target: {fileID: 0}
-  distanceThreshold: 20
-  aiState: 0
+  distanceThreshold: 0
+  aiState: 1
   animator: {fileID: 1698549983552205375}
 --- !u!136 &4351252647364001998
 CapsuleCollider:
@@ -84,9 +86,23 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4351252647364001992}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.32
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!136 &403138344
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4351252647364001992}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.2
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}

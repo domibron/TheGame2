@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Ground
   - Zombie
+  - SpawnLocationZombie
+  - Ammo
   layers:
   - Default
   - TransparentFX
@@ -13,7 +15,7 @@ TagManager:
   - Ground
   - Water
   - UI
-  - 
+  - Guns
   - 
   - 
   - 
@@ -40,6 +42,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Guns
+    uniqueID: 823857679
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

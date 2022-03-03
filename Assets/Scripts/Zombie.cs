@@ -7,78 +7,41 @@ using UnityEngine.AI;
 public class Zombie : MonoBehaviour
 {
     public float Health = 50f;
-    bool tookDamage = false;
-    bool dead = false;
-    public float damage = 30f;
+    //bool tookDamage = false;
+    //bool dead = false;
+    public float damage = 60f;
     public Transform zombie;
-    float nextTimeToAttack = 0f;
-    public float damageRate = 1000000f;
+    float nextTimeToAttack = 2f;
+    public float damageRate = 40f;
+    public CapsuleCollider zombieCollider;
+    //Scr_Movement_player scrPlayer;
 
-    public void TakeDamage(float ammount)
+    private void OnCollisionEnter(Collision collision)
     {
-        Health -= ammount;
-        tookDamage = true;
-        if (Health <= 0)
+        if (collision.gameObject.tag == "Player")
         {
-            aiState = AIState.dead;
+            Damage(collision);
         }
     }
 
-    void Die()
+    private void OnCollisionStay(Collision collision)
     {
-        Destroy(gameObject);
-    }
-
-    RaycastHit hit;
-    float range = 0.9f;
-
-    IEnumerator Attack()
-    {
-        while (true)
+        if (collision.gameObject.tag == "Player")
         {
-            animator.SetBool("Attack", false);
-
-            if (Physics.Raycast(zombie.transform.position, zombie.transform.forward, out hit, range))
-            {
-                Debug.Log(hit.transform.name);
-
-                Scr_Movement_player target = hit.transform.GetComponent<Scr_Movement_player>();
-                if (target != null && Time.time >= nextTimeToAttack)
-                {
-                    nextTimeToAttack = Time.time + (30f / damageRate);
-                    float y = damage / 2f;
-                    target.ReciveDamage(y);
-                    animator.SetBool("Attack", true);
-                }
-
-            }
-            yield return new WaitForSeconds(1f);
-        }
-        
-    }
-
-    void Damage()
-    {
-        if (Physics.Raycast(zombie.transform.position, zombie.transform.forward, out hit, range))
-        {
-            Debug.Log(hit.transform.name);
-
-            Scr_Movement_player target = hit.transform.GetComponent<Scr_Movement_player>();
-            if (target != null)
-            {
-                StartCoroutine(Attack());
-            }
+            Damage(collision);
         }
     }
+
+
 
     NavMeshAgent nm;
     public Transform target;
 
-    public float distanceThreshold = 20f;
+    public float distanceThreshold = 0f;
 
     public enum AIState { idle,chasing,dead};
 
-    public AIState aiState = AIState.idle;
+    public AIState aiState = AIState.chasing;
 
     public Animator animator;
 
@@ -86,13 +49,14 @@ public class Zombie : MonoBehaviour
     {
         nm = GetComponent<NavMeshAgent>();
         StartCoroutine(Think());
+        //scrPlayer = this.GetComponentInParent<Scr_Movement_player>();
         target = GameObject.FindGameObjectWithTag("Player").transform;
-        StartCoroutine(Attack());
+        nm.speed = Random.Range(3f, 6f);
     }
 
     void Update()
     {
-        
+
     }
 
     IEnumerator Think()
@@ -102,6 +66,7 @@ public class Zombie : MonoBehaviour
             switch (aiState)
             {
                 case AIState.idle:
+                    /*
                     float dist = Vector3.Distance(target.position, transform.position);
                     if (dist < distanceThreshold || tookDamage == true && dead == false)
                     {
@@ -113,9 +78,14 @@ public class Zombie : MonoBehaviour
                     }
                     nm.SetDestination(transform.position);
                     break;
-
+                    */
+                    aiState = AIState.chasing;
+                    animator.SetBool("Chasing", true);
+                    nm.SetDestination(target.position);
+                    break;
 
                 case AIState.chasing:
+                    /*
                     dist = Vector3.Distance(target.position, transform.position);
                     if (dist > distanceThreshold && dead == false)
                     {
@@ -126,12 +96,14 @@ public class Zombie : MonoBehaviour
                     }
                     nm.SetDestination(target.position);
                     break;
-
+                    */
+                    nm.SetDestination(GameObject.Find("Player").transform.position);
+                    break;
 
                 case AIState.dead:
                     animator.SetBool("Dead", true);
-                    dead = true;
-                    nm.SetDestination(transform.position);
+                    //dead = true;
+                    nm.SetDestination(transform.position);                    
                     Die();
                     break;
 
@@ -143,5 +115,29 @@ public class Zombie : MonoBehaviour
         }
     }
 
+    public void TakeDamage(float ammount)
+    {
+        Health -= ammount;
+        //tookDamage = true;
+        if (Health <= 0)
+        {
+            aiState = AIState.dead;
+        }
+    }
 
+    void Die()
+    {
+        Destroy(gameObject, 0.1f);
+    }
+
+    void Damage(Collision collision)
+    {
+        if (Time.time >= nextTimeToAttack)
+        {
+            Scr_Movement_player scrPlayer; // = this.GetComponentInParent<Scr_Movement_player>();
+            nextTimeToAttack = Time.time + 2000000f / damageRate;
+            scrPlayer = collision.gameObject.GetComponent<Scr_Movement_player>();
+            scrPlayer.ReciveDamage(30f);
+        }
+    }
 }
