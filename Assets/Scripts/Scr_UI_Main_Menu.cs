@@ -63,6 +63,7 @@ public class Scr_UI_Main_Menu : MonoBehaviour
         settingsMenu.SetActive(false);
         ConfirmDeleteData.SetActive(false);
 
+        //makes the cursor visible and confines it so you can't click out
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
     }
@@ -77,7 +78,6 @@ public class Scr_UI_Main_Menu : MonoBehaviour
 
         //other funtions that need to run constantly
         FullScreen();
-
         Resolution();
     }
 
@@ -135,6 +135,7 @@ public class Scr_UI_Main_Menu : MonoBehaviour
         }
     }
     
+    //when called all the user's data will be whiped and reset
     public void DeleteAllUserData()
     {
         Save_Manager.instance.DeleteSaveData();
@@ -197,11 +198,6 @@ public class Scr_UI_Main_Menu : MonoBehaviour
         Debug.Log("Game Quitting");
         Application.Quit();
     }
-
-    /// <summary>
-    /// just discorved this, this is going to help for something in the future.
-    /// 
-    /// </summary>
     
     //loads the map called Test Map 2 or Map002
     public void btn3_click()
