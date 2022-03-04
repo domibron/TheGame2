@@ -206,8 +206,8 @@ public class Scr_UI_Main_Menu : MonoBehaviour
     //loads the map called Test Map 2 or Map002
     public void btn3_click()
     {
-        Debug.Log("Loaded Map 002");
-        SceneManager.LoadScene("Map_002", LoadSceneMode.Single);
+        Debug.Log("Loaded Base Map");
+        SceneManager.LoadScene("BaseMap", LoadSceneMode.Single);
     }
 
 }
