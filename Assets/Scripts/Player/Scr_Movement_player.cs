@@ -12,6 +12,7 @@ public class Scr_Movement_player : MonoBehaviour
     float playerMaxHealth = 100f;
     float nextRegen = 0f;
     float regenRate = 2f;
+    bool isDead = false;
 
     public Slider HealthBar;
 
@@ -72,6 +73,11 @@ public class Scr_Movement_player : MonoBehaviour
         return false;
     } 
 
+    public float GetCurrentHealth()
+    {
+        return playerHealth;
+    }
+
     public void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -121,6 +127,11 @@ public class Scr_Movement_player : MonoBehaviour
         }
 
         HealthBar.value = playerHealth;
+
+        if (playerHealth <= 0)
+        {
+            isDead = true;
+        }
     }
 
     void MyInput()
@@ -151,6 +162,11 @@ public class Scr_Movement_player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isDead)
+        {
+            return;
+        }
+
         MovePlayer();
     }
 

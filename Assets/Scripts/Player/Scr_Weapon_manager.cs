@@ -7,6 +7,9 @@ using UnityEngine.SceneManagement;
 
 public class Scr_Weapon_manager : MonoBehaviour
 {
+    public Scr_Movement_player MainScript;
+    float currentHealth;
+
     public GameObject PistolGun;
     public GameObject AkGun;
 
@@ -22,6 +25,9 @@ public class Scr_Weapon_manager : MonoBehaviour
     public Camera fpsCam;
 
     public AudioSource shot;
+
+    public Light FlashLight;
+    bool toggleLight = false;
 
     Pistol_Funtions pistolFuntions;
     Ak_Functions akFunctions;
@@ -45,6 +51,8 @@ public class Scr_Weapon_manager : MonoBehaviour
 
     private void Update()
     {
+        currentHealth = MainScript.GetCurrentHealth();
+
         if (Input.GetKey(KeyCode.Alpha1))
         {
             Slots[0].SetActive(true);
@@ -57,16 +65,27 @@ public class Scr_Weapon_manager : MonoBehaviour
             Slots[1].SetActive(true);
         }
 
+        //some flash light inputs
+        FlashLight.enabled = toggleLight;
+
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            toggleLight = !toggleLight;
+            FlashLight.enabled = toggleLight;
+        }
+
 
         //main weapon physics and settings tuned for the weapon
-        if (PistolGun.activeSelf)
+        if (PistolGun.activeSelf && currentHealth > 0)
         {
             pistol.ShootPistolActive(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, PistolGun, WeaponAmmo, shot, pistolFuntions);
         }
-        else if (AkGun.activeSelf)
+        else if (AkGun.activeSelf && currentHealth > 0)
         {
             ak.ShootAkActive(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, AkGun, WeaponAmmo, shot, akFunctions);
         }
+
+
     }
 
 
@@ -77,6 +96,16 @@ public class Scr_Weapon_manager : MonoBehaviour
         ak.MaxAmmo();
     }
 
+
+    class gun
+    {
+        
+    }
+
+    class PistolWeapon : gun
+    {
+
+    }
 }
 
 

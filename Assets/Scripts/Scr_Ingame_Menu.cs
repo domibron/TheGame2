@@ -7,6 +7,9 @@ using UnityEngine.SceneManagement;
 
 public class Scr_Ingame_Menu : MonoBehaviour
 {
+    public Scr_Movement_player MainScript;
+    float currentHealth = 100f;
+
     [Header("Canvas Objects")]
     public Slider MasterVolume;
     public float masterVolume;
@@ -19,6 +22,7 @@ public class Scr_Ingame_Menu : MonoBehaviour
     //UI from other canvas
     public Text ScoreText;
     public Text HighScoreText;
+    public Text FinalScore;
 
     [Header("Varibles")]
     FullScreenMode settingVid;
@@ -33,6 +37,7 @@ public class Scr_Ingame_Menu : MonoBehaviour
     public GameObject mainPauseMenu;
     public GameObject comfirmQuit;
     public GameObject settingsMenu;
+    public GameObject GameOver;
 
     private bool isShowing = false;
 
@@ -70,6 +75,7 @@ public class Scr_Ingame_Menu : MonoBehaviour
         mainPauseMenu.SetActive(false);
         comfirmQuit.SetActive(false);
         settingsMenu.SetActive(false);
+        GameOver.SetActive(false);
 
         LoadSettings();
         HighScoreText.text = "High Score: " + highScore;
@@ -90,7 +96,7 @@ public class Scr_Ingame_Menu : MonoBehaviour
         }
 
         //pause menu
-        if (Input.GetKeyDown("escape"))
+        if (Input.GetKeyDown("escape") && currentHealth > 0)
         {
             isShowing = !isShowing;
             canvas.enabled = isShowing;
@@ -121,6 +127,7 @@ public class Scr_Ingame_Menu : MonoBehaviour
         //score and high score system
         ScoreText.text = "Score: " + score;
         HighScoreText.text = "High Score: " + highScore;
+        FinalScore.text = "Score: " + score;
 
         if (score > highScore)
         {
@@ -132,6 +139,21 @@ public class Scr_Ingame_Menu : MonoBehaviour
 
             highScore = Save_Manager.instance.activeSave.HighScore;
         }
+
+        currentHealth = MainScript.GetCurrentHealth();
+
+        if (currentHealth <= 0)
+        {
+            canvas.enabled = true;
+            GameOver.SetActive(true);
+            Time.timeScale = 0;
+            Cursor.lockState = CursorLockMode.Confined;
+            isShowing = true;
+        }
+
+        FullScreen();
+
+        Resolution();
     }
 
     public void IncreassScore(int y)
