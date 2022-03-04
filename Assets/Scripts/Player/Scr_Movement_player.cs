@@ -202,7 +202,7 @@ public class Scr_Movement_player : MonoBehaviour
         {
             //jumping in mid air force
             rb.AddForce(jumpMoveDirection.normalized * moveSpeed * airMultiplier * 0f, ForceMode.Acceleration);
-            rb.AddForce(0, -gravity * 17f, 0, ForceMode.Acceleration);
+            rb.AddForce(0, gravity * 17f, 0, ForceMode.Acceleration);
         }
     }
 }
