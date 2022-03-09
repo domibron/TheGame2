@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class Killbox : MonoBehaviour
 {
-    //when the somthing enters the collider it will send the player to the main menu
     private void OnTriggerEnter(Collider other)
     {
         SceneManager.LoadScene("Main Menu", LoadSceneMode.Single);

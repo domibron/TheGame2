@@ -77,10 +77,7 @@ public class Scr_Ingame_Menu : MonoBehaviour
         settingsMenu.SetActive(false);
         GameOver.SetActive(false);
 
-        //calls the load settins funtion
         LoadSettings();
-
-        //sets highscore.text to highscore and score to 0
         HighScoreText.text = "High Score: " + highScore;
         score = 0;
     }
@@ -98,7 +95,7 @@ public class Scr_Ingame_Menu : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
         }
 
-        //pause menu toggle and will disable if the player is dead
+        //pause menu
         if (Input.GetKeyDown("escape") && currentHealth > 0)
         {
             isShowing = !isShowing;
@@ -108,7 +105,6 @@ public class Scr_Ingame_Menu : MonoBehaviour
             settingsMenu.SetActive(false);
         }
 
-        //if the menu is showing the game will pause
         if (isShowing == true)
         {
             Time.timeScale = 0;
@@ -117,6 +113,7 @@ public class Scr_Ingame_Menu : MonoBehaviour
         {
             Time.timeScale = 1;
         }
+
 
         //settings update values
         MasterVolumeText.text = "Master Volume: " + ((int)(masterVolume * 100));
@@ -127,12 +124,11 @@ public class Scr_Ingame_Menu : MonoBehaviour
         fov = Fov.value;
         fpsCam.fieldOfView = fov;
 
-        //score and high score system update
+        //score and high score system
         ScoreText.text = "Score: " + score;
         HighScoreText.text = "High Score: " + highScore;
         FinalScore.text = "Score: " + score;
 
-        //save and sets the highscore when the score is grater than it
         if (score > highScore)
         {
             Save_Manager.instance.activeSave.HighScore = score;
@@ -144,10 +140,8 @@ public class Scr_Ingame_Menu : MonoBehaviour
             highScore = Save_Manager.instance.activeSave.HighScore;
         }
 
-        //sets the varible current health to the player's health
         currentHealth = MainScript.GetCurrentHealth();
 
-        //checks if the player is daed to display the game over screen
         if (currentHealth <= 0)
         {
             canvas.enabled = true;
@@ -157,19 +151,14 @@ public class Scr_Ingame_Menu : MonoBehaviour
             isShowing = true;
         }
 
-        //this is very important for setting Resolution and FullScrenn settings
         FullScreen();
+
         Resolution();
     }
 
-    //when called it will increass the score by y
     public void IncreassScore(int y)
     {
-        score += y;
-    }
-    public void IncreassScore(float y)
-    {
-        score += (int)y;
+        score = score + y;
     }
 
     //sets the fullscreen mode depending on the dropbox value
@@ -262,7 +251,6 @@ public class Scr_Ingame_Menu : MonoBehaviour
         Fov.value = Save_Manager.instance.activeSave.FOV;
     }
 
-    //funtion for the resume button to resume
     public void btn1_click()
     {
         isShowing = !isShowing;
@@ -272,13 +260,11 @@ public class Scr_Ingame_Menu : MonoBehaviour
         Cursor.visible = false;
     }
 
-    //fuction for the quit button to quit
     public void btn2_click()
     {
         Application.Quit();
     }
 
-    //funtion for the main menu button to go back to the main menu
     public void btn3_click()
     {
         Debug.Log("Loading main menu");

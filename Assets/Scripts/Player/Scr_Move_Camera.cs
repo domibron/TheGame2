@@ -8,7 +8,6 @@ public class Scr_Move_Camera : MonoBehaviour
 
     void Update()
     {
-        //sets the camera position to the camera position on the player
         transform.position = cameraPosition.position;
     }
 }
