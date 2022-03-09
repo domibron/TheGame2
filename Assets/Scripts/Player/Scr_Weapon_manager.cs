@@ -14,6 +14,7 @@ public class Scr_Weapon_manager : MonoBehaviour
     //gets the weapon modles/prefabs as game objects
     public GameObject PistolGun;
     public GameObject AkGun;
+    int showWeapon;
 
     //creates a game object array called Slots
     GameObject[] Slots;
@@ -46,6 +47,7 @@ public class Scr_Weapon_manager : MonoBehaviour
         //set the pistol to be active
         AkGun.SetActive(false);
         PistolGun.SetActive(true);
+        showWeapon = 2;
 
         //gets the weapons' funtions
         pistolFuntions = PistolGun.GetComponent<Pistol_Funtions>();
@@ -60,16 +62,49 @@ public class Scr_Weapon_manager : MonoBehaviour
         //swiches to primary weapon slot when the 1 key is pressed
         if (Input.GetKey(KeyCode.Alpha1))
         {
-            Slots[0].SetActive(true);
-            Slots[1].SetActive(false);
+            showWeapon = 1;
+
+            //Slots[0].SetActive(true);
+            //Slots[1].SetActive(false);
         }
 
         //swiches to secondary weapon slot when the 1 key is pressed
         if (Input.GetKey(KeyCode.Alpha2))
         {
+            showWeapon = 2;
+
+            //Slots[0].SetActive(false);
+            //Slots[1].SetActive(true);
+        }
+
+        //checks for what weapon to display
+        if (showWeapon == 1)
+        {
+            Slots[0].SetActive(true);
+            Slots[1].SetActive(false);
+        }
+        else if (showWeapon == 2)
+        {
             Slots[0].SetActive(false);
             Slots[1].SetActive(true);
         }
+
+        //updated weapon switching
+        if (Input.mouseScrollDelta.y != 0)
+        {
+            if (showWeapon == 1)
+            {
+                showWeapon = 2;
+            }
+            else if (showWeapon == 2)
+            {
+                showWeapon = 1;
+            }
+        }
+
+
+
+
 
         //flashlight toggle set
         FlashLight.enabled = toggleLight;
@@ -100,329 +135,328 @@ public class Scr_Weapon_manager : MonoBehaviour
 
         ak.MaxAmmo();
     }
+}
 
+class Pistol : MonoBehaviour
+{
+    //varibles for weapon
+    float nextTimeToFire = 2f;
+    float ammo = 12f;
+    readonly float ammoCap = 12f;
+    float reserveAmmo = 36f;
+    float reserveAmmoCap = 96f;
+    readonly float fireRate = 80f;
+    readonly float range = 100f;
+    readonly float damage = 20f;
+    readonly float impactForce = 4f;
 
-    class Pistol : Scr_Weapon_manager
+    //weapon ads varibles Vector 3s
+    Vector3 WeaponPosition;
+    Vector3 weaponADS;
+    Vector3 weaponDefault;
+
+    //When this is called the weapon shoots
+    //you will need to pass a Camera for raycasts, imppactEffect for when the raycast hits a zombie,
+    //imppactEffect for when the raycast hits anything other than a zombie, The in game screen cavas script to access some varibles,
+    //The weapon game object for transformation, The ammo Text to eddit the text, audio shot for the SFX sounds when the weapon shoots,
+    //the weapon's funtion script so any weapon dependent script can be accessed.
+    public void ShootPistolActive(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, GameObject gun, Text WeaponAmmo, AudioSource shot, Pistol_Funtions pistolFuntions)
     {
-        //varibles for weapon
-        float nextTimeToFire = 2f;
-        float ammo = 12f;
-        readonly float ammoCap = 12f;
-        float reserveAmmo = 36f;
-        float reserveAmmoCap = 96f;
-        readonly float fireRate = 80f;
-        readonly float range = 100f;
-        readonly float damage = 20f;
-        readonly float impactForce = 4f;
+        //weapon positions
+        weaponADS.Set(0f, -0.146f, 0.35f);
+        weaponDefault.Set(0.34f, -0.27f, 0.49f);
 
-        //weapon ads varibles Vector 3s
-        Vector3 WeaponPosition;
-        Vector3 weaponADS;
-        Vector3 weaponDefault;
+        //weapon text to display on screen
+        WeaponAmmo.text = ammo + "/" + ammoCap + "  {" + reserveAmmo + "}";
 
-        //When this is called the weapon shoots
-        //you will need to pass a Camera for raycasts, imppactEffect for when the raycast hits a zombie,
-        //imppactEffect for when the raycast hits anything other than a zombie, The in game screen cavas script to access some varibles,
-        //The weapon game object for transformation, The ammo Text to eddit the text, audio shot for the SFX sounds when the weapon shoots,
-        //the weapon's funtion script so any weapon dependent script can be accessed.
-        public void ShootPistolActive(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, GameObject gun, Text WeaponAmmo, AudioSource shot, Pistol_Funtions pistolFuntions)
+        //transform the gun positions 
+        gun.transform.localPosition = WeaponPosition;
+
+        //shoots the weapon if the coditions are right (if left click && Time is grater than next time to fire && ammo is grater than 0)
+        if (Input.GetKey(KeyCode.Mouse0) && Time.time >= nextTimeToFire && ammo > 0)
         {
-            //weapon positions
-            weaponADS.Set(0f, -0.146f, 0.35f);
-            weaponDefault.Set(0.34f, -0.27f, 0.49f);
+            //delay is set
+            nextTimeToFire = Time.time + 20f / fireRate;
 
-            //weapon text to display on screen
-            WeaponAmmo.text = ammo + "/" + ammoCap + "  {" + reserveAmmo + "}";
-
-            //transform the gun positions 
-            gun.transform.localPosition = WeaponPosition;
-
-            //shoots the weapon if the coditions are right (if left click && Time is grater than next time to fire && ammo is grater than 0)
-            if (Input.GetKey(KeyCode.Mouse0) && Time.time >= nextTimeToFire && ammo > 0)
-            {
-                //delay is set
-                nextTimeToFire = Time.time + 20f / fireRate;
-
-                //this is where the fpsCam, impactEffects and impactEffectsOther, In game menu and shot audio file are passed
-                Shoot(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, shot);
-            }
-
-            //ads the weapon is the codions are correct (if mouse right)
-            if (Input.GetKey(KeyCode.Mouse1))
-            {
-                WeaponPosition = Vector3.Lerp(WeaponPosition, weaponADS, 10 * Time.deltaTime);
-            }
-            //set the weapon back to normal if right mouse is lifted
-            else
-            {
-                WeaponPosition = Vector3.Lerp(WeaponPosition, weaponDefault, 10 * Time.deltaTime);
-            }
-
-            //reloads the weapon if right key is pressed
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                //this is where the ak funtions are passed
-                Reload(pistolFuntions);
-            }
+            //this is where the fpsCam, impactEffects and impactEffectsOther, In game menu and shot audio file are passed
+            Shoot(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, shot);
         }
 
-        //when called the weapon sends a racast and is checks
-        //this is where the fpsCam, impactEffects and impactEffectsOther, In game menu and shot audio file are passed
-        public void Shoot(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, AudioSource shot)
+        //ads the weapon is the codions are correct (if mouse right)
+        if (Input.GetKey(KeyCode.Mouse1))
         {
-            //reduces ammo
-            ammo--;
-
-            //plays audio file
-            shot.Play();
-
-            //send out raycast and returns hit as target
-            if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out RaycastHit hit, range))
-            {
-                //accessing the zombie for the TakeDamage function using target
-                Zombie target = hit.transform.GetComponent<Zombie>();
-
-                //runs the take damage funtion wich removes the zombie's health ammount by the weapon damage if the target is not null
-                if (target != null)
-                {
-                    target.TakeDamage(damage);
-                }
-
-                //force to push rigidbodies back if target is null
-                if (hit.rigidbody != null)
-                {
-                    hit.rigidbody.AddForce(-hit.normal * impactForce);
-                }
-
-                //related to the partical system
-                if (hit.transform.tag == "Zombie")
-                {
-                    //adds 10 pints to the score
-                    gameCanvasScript.IncreassScore(10);
-
-                    //this creats a impact effect at the zombie and then destroys it.
-                    GameObject impactGO = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
-                    Destroy(impactGO, 2f);
-                }
-
-                else
-                {
-                    //this creats a impact effect at anything but a zombie and then destroys it.
-                    GameObject impactGO = Instantiate(impactEffectOther, hit.point, Quaternion.LookRotation(hit.normal));
-                    Destroy(impactGO, 2f);
-                }
-            }
+            WeaponPosition = Vector3.Lerp(WeaponPosition, weaponADS, 10 * Time.deltaTime);
+        }
+        //set the weapon back to normal if right mouse is lifted
+        else
+        {
+            WeaponPosition = Vector3.Lerp(WeaponPosition, weaponDefault, 10 * Time.deltaTime);
         }
 
-
-        //when called the weapon reloads also where the weapon funtions are passed
-        void Reload(Pistol_Funtions pistolFuntions)
+        //reloads the weapon if right key is pressed
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            //cancels the funtion if there is no ammo in the weapon
-            if (reserveAmmo <= 0)
-            {
-                return;
-            }
-
-            //plays the weapon's reload animation
-            pistolFuntions.ReloadAnimation();
-
-
-            //nothing at the moment.
-            float y;
-
-            //y is the invert of what's left in the clip.
-            y = ammoCap - ammo;
-
-            if (reserveAmmo >= y)
-            {
-                //this takes away y from the ammo reserve.
-                reserveAmmo -= y;
-
-                //this puts the ammo from reserve into clip.
-                ammo += y;
-            }
-            else
-            {
-                //gets whats left in reserve.
-                y = reserveAmmo;
-
-                //adds what's left in ammo reserve. 
-                ammo += y;
-
-                //sets reserve to 0.
-                reserveAmmo = 0f;
-            }
-
-        }
-
-        //when called the weapon ammo is filled to the max
-        public void MaxAmmo()
-        {
-            reserveAmmo = reserveAmmoCap;
-            ammo = ammoCap;
+            //this is where the ak funtions are passed
+            Reload(pistolFuntions);
         }
     }
 
-    class Ak : Scr_Weapon_manager
+    //when called the weapon sends a racast and is checks
+    //this is where the fpsCam, impactEffects and impactEffectsOther, In game menu and shot audio file are passed
+    public void Shoot(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, AudioSource shot)
     {
-        //varibles for weapon
-        float nextTimeToFire = 2f;
-        float ammo = 30f;
-        readonly float ammoCap = 30f;
-        float reserveAmmo = 120f;
-        float reserveAmmoCap = 360f;
-        readonly float fireRate = 160f;
-        readonly float range = 300f;
-        readonly float damage = 60f;
-        readonly float impactForce = 4f;
+        //reduces ammo
+        ammo--;
 
-        //weapon ads varibles Vector 3s
-        Vector3 WeaponPosition;
-        Vector3 weaponADS;
-        Vector3 weaponDefault;
+        //plays audio file
+        shot.Play();
 
-        //When this is called the weapon shoots
-        //you will need to pass a Camera for raycasts, imppactEffect for when the raycast hits a zombie,
-        //imppactEffect for when the raycast hits anything other than a zombie, The in game screen cavas script to access some varibles,
-        //The weapon game object for transformation, The ammo Text to eddit the text, audio shot for the SFX sounds when the weapon shoots,
-        //the weapon's funtion script so any weapon dependent script can be accessed.
-        public void ShootAkActive(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, GameObject gun, Text WeaponAmmo, AudioSource shot, Ak_Functions akFunctions)
+        //send out raycast and returns hit as target
+        if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out RaycastHit hit, range))
         {
-            //hard set weapon positions
-            weaponADS.Set(0f, -0.2177f, -0.4f);
-            weaponDefault.Set(0.45f, -0.4f, 0.49f);
+            //accessing the zombie for the TakeDamage function using target
+            Zombie target = hit.transform.GetComponent<Zombie>();
 
-            //weapon text to display on screen
-            WeaponAmmo.text = ammo + "/" + ammoCap + "  {" + reserveAmmo + "}";
-
-            //transform the gun positions 
-            gun.transform.localPosition = WeaponPosition;
-
-            //shoots the weapon if the coditions are right (if left click && Time is grater than next time to fire && ammo is grater than 0)
-            if (Input.GetKey(KeyCode.Mouse0) && Time.time >= nextTimeToFire && ammo > 0)
+            //runs the take damage funtion wich removes the zombie's health ammount by the weapon damage if the target is not null
+            if (target != null)
             {
-                //delay is set
-                nextTimeToFire = Time.time + 20f / fireRate;
-
-                //this is where the fpsCam, impactEffects and impactEffectsOther, In game menu and shot audio file are passed
-                Shoot(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, shot);
+                target.TakeDamage(damage);
             }
 
-            //ads the weapon is the codions are correct (if mouse right)
-            if (Input.GetKey(KeyCode.Mouse1))
+            //force to push rigidbodies back if target is null
+            if (hit.rigidbody != null)
             {
-                WeaponPosition = Vector3.Lerp(WeaponPosition, weaponADS, 10 * Time.deltaTime);
+                hit.rigidbody.AddForce(-hit.normal * impactForce);
             }
-            //set the weapon back to normal if right mouse is lifted
+
+            //related to the partical system
+            if (hit.transform.tag == "Zombie")
+            {
+                //adds 10 pints to the score
+                gameCanvasScript.IncreassScore(10);
+
+                //this creats a impact effect at the zombie and then destroys it.
+                GameObject impactGO = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(impactGO, 2f);
+            }
+
             else
             {
-                WeaponPosition = Vector3.Lerp(WeaponPosition, weaponDefault, 10 * Time.deltaTime);
-            }
-
-            //reloads the weapon if right key is pressed
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                //this is where the ak funtions are passed
-                Reload(akFunctions);
+                //this creats a impact effect at anything but a zombie and then destroys it.
+                GameObject impactGO = Instantiate(impactEffectOther, hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(impactGO, 2f);
             }
         }
+    }
 
-        //when called the weapon sends a racast and is checks
-        //this is where the fpsCam, impactEffects and impactEffectsOther, In game menu and shot audio file are passed
-        public void Shoot(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, AudioSource shot)
+
+    //when called the weapon reloads also where the weapon funtions are passed
+    void Reload(Pistol_Funtions pistolFuntions)
+    {
+        //cancels the funtion if there is no ammo in the weapon
+        if (reserveAmmo <= 0)
         {
-            //reduces ammo
-            ammo--;
-
-            //plays audio file
-            shot.Play();
-
-            //send out raycast and returns hit as target
-            if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out RaycastHit hit, range))
-            {
-                //accessing the zombie for the TakeDamage function using target
-                Zombie target = hit.transform.GetComponent<Zombie>();
-
-                //runs the take damage funtion wich removes the zombie's health ammount by the weapon damage if the target is not null
-                if (target != null)
-                {
-                    target.TakeDamage(damage);
-                }
-
-                //force to push rigidbodies back if target is null
-                if (hit.rigidbody != null)
-                {
-                    hit.rigidbody.AddForce(-hit.normal * impactForce);
-                }
-
-                //related to the partical system
-                if (hit.transform.tag == "Zombie")
-                {
-                    //adds 10 pints to the score
-                    gameCanvasScript.IncreassScore(10);
-
-                    //this creats a impact effect at the zombie and then destroys it.
-                    GameObject impactGO = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
-                    Destroy(impactGO, 2f);
-                }
-
-                else
-                {
-                    //this creats a impact effect at anything but a zombie and then destroys it.
-                    GameObject impactGO = Instantiate(impactEffectOther, hit.point, Quaternion.LookRotation(hit.normal));
-                    Destroy(impactGO, 2f);
-                }
-            }
+            return;
         }
 
+        //plays the weapon's reload animation
+        pistolFuntions.ReloadAnimation();
 
-        //when called the weapon reloads also where the weapon funtions are passed
-        void Reload(Ak_Functions akFunctions)
+
+        //nothing at the moment.
+        float y;
+
+        //y is the invert of what's left in the clip.
+        y = ammoCap - ammo;
+
+        if (reserveAmmo >= y)
         {
-            //cancels the funtion if there is no ammo in the weapon
-            if (reserveAmmo <= 0)
+            //this takes away y from the ammo reserve.
+            reserveAmmo -= y;
+
+            //this puts the ammo from reserve into clip.
+            ammo += y;
+        }
+        else
+        {
+            //gets whats left in reserve.
+            y = reserveAmmo;
+
+            //adds what's left in ammo reserve. 
+            ammo += y;
+
+            //sets reserve to 0.
+            reserveAmmo = 0f;
+        }
+
+    }
+
+    //when called the weapon ammo is filled to the max
+    public void MaxAmmo()
+    {
+        reserveAmmo = reserveAmmoCap;
+        ammo = ammoCap;
+    }
+}
+
+class Ak : MonoBehaviour
+{
+    //varibles for weapon
+    float nextTimeToFire = 2f;
+    float ammo = 30f;
+    readonly float ammoCap = 30f;
+    float reserveAmmo = 120f;
+    float reserveAmmoCap = 360f;
+    readonly float fireRate = 160f;
+    readonly float range = 300f;
+    readonly float damage = 60f;
+    readonly float impactForce = 4f;
+
+    //weapon ads varibles Vector 3s
+    Vector3 WeaponPosition;
+    Vector3 weaponADS;
+    Vector3 weaponDefault;
+
+    //When this is called the weapon shoots
+    //you will need to pass a Camera for raycasts, imppactEffect for when the raycast hits a zombie,
+    //imppactEffect for when the raycast hits anything other than a zombie, The in game screen cavas script to access some varibles,
+    //The weapon game object for transformation, The ammo Text to eddit the text, audio shot for the SFX sounds when the weapon shoots,
+    //the weapon's funtion script so any weapon dependent script can be accessed.
+    public void ShootAkActive(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, GameObject gun, Text WeaponAmmo, AudioSource shot, Ak_Functions akFunctions)
+    {
+        //hard set weapon positions
+        weaponADS.Set(0f, -0.2177f, -0.4f);
+        weaponDefault.Set(0.45f, -0.4f, 0.49f);
+
+        //weapon text to display on screen
+        WeaponAmmo.text = ammo + "/" + ammoCap + "  {" + reserveAmmo + "}";
+
+        //transform the gun positions 
+        gun.transform.localPosition = WeaponPosition;
+
+        //shoots the weapon if the coditions are right (if left click && Time is grater than next time to fire && ammo is grater than 0)
+        if (Input.GetKey(KeyCode.Mouse0) && Time.time >= nextTimeToFire && ammo > 0)
+        {
+            //delay is set
+            nextTimeToFire = Time.time + 20f / fireRate;
+
+            //this is where the fpsCam, impactEffects and impactEffectsOther, In game menu and shot audio file are passed
+            Shoot(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, shot);
+        }
+
+        //ads the weapon is the codions are correct (if mouse right)
+        if (Input.GetKey(KeyCode.Mouse1))
+        {
+            WeaponPosition = Vector3.Lerp(WeaponPosition, weaponADS, 10 * Time.deltaTime);
+        }
+        //set the weapon back to normal if right mouse is lifted
+        else
+        {
+            WeaponPosition = Vector3.Lerp(WeaponPosition, weaponDefault, 10 * Time.deltaTime);
+        }
+
+        //reloads the weapon if right key is pressed
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            //this is where the ak funtions are passed
+            Reload(akFunctions);
+        }
+    }
+
+    //when called the weapon sends a racast and is checks
+    //this is where the fpsCam, impactEffects and impactEffectsOther, In game menu and shot audio file are passed
+    public void Shoot(Camera fpsCam, GameObject impactEffect, GameObject impactEffectOther, Scr_Ingame_Menu gameCanvasScript, AudioSource shot)
+    {
+        //reduces ammo
+        ammo--;
+
+        //plays audio file
+        shot.Play();
+
+        //send out raycast and returns hit as target
+        if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out RaycastHit hit, range))
+        {
+            //accessing the zombie for the TakeDamage function using target
+            Zombie target = hit.transform.GetComponent<Zombie>();
+
+            //runs the take damage funtion wich removes the zombie's health ammount by the weapon damage if the target is not null
+            if (target != null)
             {
-                return;
+                target.TakeDamage(damage);
             }
 
-            //plays the weapon's reload animation
-            akFunctions.ReloadAnimation();
-
-            
-            //nothing at the moment.
-            float y;
-
-            //y is the invert of what's left in the clip.
-            y = ammoCap - ammo;
-
-            if (reserveAmmo >= y)
+            //force to push rigidbodies back if target is null
+            if (hit.rigidbody != null)
             {
-                //this takes away y from the ammo reserve.
-                reserveAmmo -= y;
-
-                //this puts the ammo from reserve into clip.
-                ammo += y;
+                hit.rigidbody.AddForce(-hit.normal * impactForce);
             }
+
+            //related to the partical system
+            if (hit.transform.tag == "Zombie")
+            {
+                //adds 10 pints to the score
+                gameCanvasScript.IncreassScore(10);
+
+                //this creats a impact effect at the zombie and then destroys it.
+                GameObject impactGO = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(impactGO, 2f);
+            }
+
             else
             {
-                //gets whats left in reserve.
-                y = reserveAmmo;
-
-                //adds what's left in ammo reserve. 
-                ammo += y;
-
-                //sets reserve to 0.
-                reserveAmmo = 0f;
+                //this creats a impact effect at anything but a zombie and then destroys it.
+                GameObject impactGO = Instantiate(impactEffectOther, hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(impactGO, 2f);
             }
-            
+        }
+    }
+
+
+    //when called the weapon reloads also where the weapon funtions are passed
+    void Reload(Ak_Functions akFunctions)
+    {
+        //cancels the funtion if there is no ammo in the weapon
+        if (reserveAmmo <= 0)
+        {
+            return;
         }
 
-        //when called the weapon ammo is filled to the max
-        public void MaxAmmo()
+        //plays the weapon's reload animation
+        akFunctions.ReloadAnimation();
+
+
+        //nothing at the moment.
+        float y;
+
+        //y is the invert of what's left in the clip.
+        y = ammoCap - ammo;
+
+        if (reserveAmmo >= y)
         {
-            reserveAmmo = reserveAmmoCap;
-            ammo = ammoCap;
+            //this takes away y from the ammo reserve.
+            reserveAmmo -= y;
+
+            //this puts the ammo from reserve into clip.
+            ammo += y;
         }
+        else
+        {
+            //gets whats left in reserve.
+            y = reserveAmmo;
+
+            //adds what's left in ammo reserve. 
+            ammo += y;
+
+            //sets reserve to 0.
+            reserveAmmo = 0f;
+        }
+
+    }
+
+    //when called the weapon ammo is filled to the max
+    public void MaxAmmo()
+    {
+        reserveAmmo = reserveAmmoCap;
+        ammo = ammoCap;
     }
 }
