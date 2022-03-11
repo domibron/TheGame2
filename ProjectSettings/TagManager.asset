@@ -8,6 +8,7 @@ TagManager:
   - Zombie
   - SpawnLocationZombie
   - Ammo
+  - Weapon
   layers:
   - Default
   - TransparentFX

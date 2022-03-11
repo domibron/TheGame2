@@ -12,7 +12,7 @@ public class Scr_Camera_player : MonoBehaviour
     public Scr_Weapon_manager Weapon_Manager;
 
     public Camera fpsCam;
-    float range = 2f;
+    float range = 3f;
 
     [SerializeField] private float sensX;
     [SerializeField] private float sensY;
@@ -85,6 +85,11 @@ public class Scr_Camera_player : MonoBehaviour
                 if(hit.transform.tag == "Ammo")
                 {
                     Weapon_Manager.AmmoFill();
+                }
+
+                if(hit.transform.tag == "Weapon")
+                {
+                    Weapon_Manager.PickupWeapon(hit);
                 }
             }
         }

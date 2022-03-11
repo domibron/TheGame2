@@ -21,7 +21,7 @@ public class Scr_Movement_player : MonoBehaviour
     [Header("Movement")]
     public float sprintSpeed = 10f;
     public float moveSpeed = 4f;
-    public float airMultiplier = 1f;
+    public float airMultiplier = 0.1f;
     public float movementMultiplier = 10f;
 
     [Header("Jumping")]
@@ -96,7 +96,7 @@ public class Scr_Movement_player : MonoBehaviour
         //is grounded check
         isGrounded = Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), groundDistance, groundMask);
 
-        //runs myinput funtion and controll drag (more over this farther down)
+        //runs myinput funtion and control drag (more over this farther down)
         MyInput();
         ControllDrag();
 
@@ -147,6 +147,9 @@ public class Scr_Movement_player : MonoBehaviour
         {
             isDead = true;
         }
+
+
+        jumpMoveDirection = moveDirection * 0.1f;
     }
 
     //when called it will grab movement input
@@ -233,8 +236,8 @@ public class Scr_Movement_player : MonoBehaviour
         else if (!isGrounded)
         {
             //jumping in mid air force with a downwards force
-            rb.AddForce(jumpMoveDirection.normalized * moveSpeed * airMultiplier * 0f, ForceMode.Acceleration);
-            rb.AddForce(0, gravity * 17f, 0, ForceMode.Acceleration);
+            rb.AddForce(jumpMoveDirection.normalized * moveSpeed * movementMultiplier * airMultiplier, ForceMode.Acceleration);
+            rb.AddForce(0, gravity / 6.06f, 0, ForceMode.Impulse);
         }
     }
 }

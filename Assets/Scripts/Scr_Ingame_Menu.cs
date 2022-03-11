@@ -9,6 +9,7 @@ public class Scr_Ingame_Menu : MonoBehaviour
 {
     public Scr_Movement_player MainScript;
     float currentHealth = 100f;
+    public AudioSource Music;
 
     [Header("Canvas Objects")]
     public Slider MasterVolume;
@@ -18,6 +19,8 @@ public class Scr_Ingame_Menu : MonoBehaviour
     public Dropdown VideoResolution;
     public Slider Fov;
     public Text FovText;
+    public Slider MusicVolume;
+    float musicVolume;
 
     //UI from other canvas
     public Text ScoreText;
@@ -126,6 +129,10 @@ public class Scr_Ingame_Menu : MonoBehaviour
         FovText.text = "Fov: " + fov;
         fov = Fov.value;
         fpsCam.fieldOfView = fov;
+        
+        //vaules for the music
+        musicVolume = MusicVolume.value;
+        Music.volume = musicVolume;
 
         //score and high score system update
         ScoreText.text = "Score: " + score;
