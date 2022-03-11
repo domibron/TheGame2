@@ -4288,7 +4288,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100000, guid: b3248db90896a6f46a0cdb09d671a88f, type: 3}
       propertyPath: m_Name
-      value: Pistol
+      value: PistolGun
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: b3248db90896a6f46a0cdb09d671a88f, type: 3}
       propertyPath: m_TagString
