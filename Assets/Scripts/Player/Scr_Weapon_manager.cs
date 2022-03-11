@@ -14,10 +14,11 @@ public class Scr_Weapon_manager : MonoBehaviour
     //gets the weapon modles/prefabs as game objects
     public GameObject PistolGun;
     public GameObject AkGun;
+    public GameObject AssultGun;
     int showWeapon;
 
     //creates a game object array called Slots
-    GameObject[] Slots;
+    [SerializeField] GameObject[] Slots;
 
     //cavas objects, Game Objects, camera and audio file
     public Text WeaponAmmo;
@@ -47,6 +48,7 @@ public class Scr_Weapon_manager : MonoBehaviour
         //set the pistol to be active
         AkGun.SetActive(false);
         PistolGun.SetActive(true);
+        AssultGun.SetActive(false);
         showWeapon = 2;
 
         //gets the weapons' funtions
@@ -126,6 +128,10 @@ public class Scr_Weapon_manager : MonoBehaviour
         {
             ak.ShootAkActive(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, AkGun, WeaponAmmo, shot, akFunctions);
         }
+        else if (AssultGun.activeSelf && currentHealth > 0)
+        {
+            //ak.ShootAkActive(fpsCam, impactEffect, impactEffectOther, gameCanvasScript, AkGun, WeaponAmmo, shot, akFunctions);
+        }
     }
 
     //when called is fills all weapon's ammo
@@ -134,6 +140,54 @@ public class Scr_Weapon_manager : MonoBehaviour
         pistol.MaxAmmo();
 
         ak.MaxAmmo();
+    }
+
+
+    public void PickupWeapon(RaycastHit hit)
+    {
+        if(hit.transform.name == "AkGun")
+        {
+            if (showWeapon == 1)
+            {
+                Slots[0].SetActive(false);
+                Slots[0] = AkGun;
+            }
+            else if (showWeapon == 2)
+            {
+                Slots[1].SetActive(false);
+                Slots[1] = AkGun;
+            }
+            hit.transform.gameObject.SetActive(false);
+        }
+        if (hit.transform.name == "PistolGun")
+        {
+            if (showWeapon == 1)
+            {
+                Slots[0].SetActive(false);
+                Slots[0] = PistolGun;
+            }
+            else if (showWeapon == 2)
+            {
+                Slots[1].SetActive(false);
+                Slots[1] = PistolGun;
+            }
+            hit.transform.gameObject.SetActive(false);
+        }
+        if (hit.transform.name == "AssultGun")
+        {
+            if (showWeapon == 1)
+            {
+                Slots[0].SetActive(false);
+                Slots[0] = AssultGun;
+            }
+            else if (showWeapon == 2)
+            {
+                Slots[1].SetActive(false);
+                Slots[1] = AssultGun;
+            }
+            hit.transform.gameObject.SetActive(false);
+            AssultGun.SetActive(true);
+        }
     }
 }
 
