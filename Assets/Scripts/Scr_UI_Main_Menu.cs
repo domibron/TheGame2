@@ -203,7 +203,7 @@ public class Scr_UI_Main_Menu : MonoBehaviour
     public void btn3_click()
     {
         Debug.Log("Loaded Base Map");
-        SceneManager.LoadScene("BaseMap", LoadSceneMode.Single);
+        SceneManager.LoadScene("MainMap", LoadSceneMode.Single);
     }
 
 }
